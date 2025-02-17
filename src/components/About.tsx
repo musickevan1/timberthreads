@@ -23,14 +23,14 @@ const About = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="aspect-square rounded-lg overflow-hidden">
               <img 
-                src="https://images.unsplash.com/photo-1597058712635-3182d1eacc1e?q=80&w=800&auto=format&fit=crop"
+                src="https://www.publicdomainpictures.net/pictures/40000/velka/quilted-background-3.jpg"
                 alt="Quilting workshop"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="aspect-square rounded-lg overflow-hidden mt-8">
               <img 
-                src="https://images.unsplash.com/photo-1512218168353-4bba6ac5f543?q=80&w=800&auto=format&fit=crop"
+                src="https://static.vecteezy.com/system/resources/previews/025/492/745/non_2x/craftsperson-skilled-hands-create-intricate-embroidery-on-silk-garment-generated-by-ai-free-photo.jpg"
                 alt="Handmade quilt"
                 className="w-full h-full object-cover"
               />
