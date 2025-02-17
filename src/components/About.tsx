@@ -23,29 +23,29 @@ const About = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="aspect-square rounded-lg overflow-hidden">
               <img 
-                src="https://images.unsplash.com/photo-1544967082-d9d25d867d66?q=80&w=800&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1597058712635-3182d1eacc1e?q=80&w=800&auto=format&fit=crop"
                 alt="Quilting workshop"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="aspect-square rounded-lg overflow-hidden mt-8">
               <img 
-                src="https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?q=80&w=800&auto=format&fit=crop"
-                alt="Handcrafted textiles"
+                src="https://images.unsplash.com/photo-1512218168353-4bba6ac5f543?q=80&w=800&auto=format&fit=crop"
+                alt="Handmade quilt"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="aspect-square rounded-lg overflow-hidden -mt-8">
               <img 
-                src="https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=80&w=800&auto=format&fit=crop"
-                alt="Craft materials"
+                src="https://images.unsplash.com/photo-1605627079912-97c3810a11a4?q=80&w=800&auto=format&fit=crop"
+                alt="Sewing supplies"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="aspect-square rounded-lg overflow-hidden">
               <img 
-                src="https://images.unsplash.com/photo-1612344441107-ef12287e4872?q=80&w=800&auto=format&fit=crop"
-                alt="Weaving loom"
+                src="https://images.unsplash.com/photo-1528575950036-63c4853d3f6f?q=80&w=800&auto=format&fit=crop"
+                alt="Crafting workshop"
                 className="w-full h-full object-cover"
               />
             </div>
