@@ -1,19 +1,41 @@
 'use client';
 
 import { Link } from 'react-scroll';
+import Image from 'next/image';
 
 const Hero = () => {
   return (
-    <section id="hero" className="relative h-screen flex items-center justify-center">
-      <div 
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ 
-          backgroundImage: 'url("https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?q=80&w=1920&auto=format&fit=crop")',
-        }}
-      >
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
+    <section id="hero" className="relative h-screen flex items-center justify-center overflow-hidden">
+      <div className="absolute inset-0">
+        <Image
+          src="/assets/hero-front-view.jpeg"
+          alt="Timber & Threads Retreat Center"
+          fill
+          priority
+          quality={100}
+          loading="eager"
+          sizes="100vw"
+          className="object-cover"
+          style={{ 
+            objectPosition: 'center 15%',
+            imageRendering: '-webkit-optimize-contrast',
+            transform: 'scale(1.01)' // Slight scale to prevent edge artifacts
+          }}
+        />
+        <div className="absolute inset-0 bg-black/50"></div>
       </div>
       <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8">
+        <div className="relative w-40 h-40 mx-auto mb-6">
+          <div className="absolute inset-0 bg-white/5 rounded-full blur-xl"></div>
+          <Image
+            src="/assets/logo.png"
+            alt="Timber & Threads Logo"
+            fill
+            priority
+            className="object-contain drop-shadow-lg"
+            sizes="(max-width: 768px) 160px, 160px"
+          />
+        </div>
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-medium mb-6">
           Timber & Threads Retreat
         </h1>
