@@ -18,15 +18,15 @@ const Contact = () => {
             <div className="space-y-4 text-stone-700">
               <p className="flex items-center">
                 <span className="w-20 font-medium">Email:</span>
-                <span>hello@timberandthreads.com</span>
+                <span>contact@timberandthreads.com</span>
               </p>
               <p className="flex items-center">
                 <span className="w-20 font-medium">Phone:</span>
-                <span>(555) 123-4567</span>
+                <span>Please contact via email</span>
               </p>
               <p className="flex items-center">
                 <span className="w-20 font-medium">Address:</span>
-                <span>123 Forest Lane<br />Woodland Valley, WA 98123</span>
+                <span>Clinton, MO</span>
               </p>
             </div>
           </div>

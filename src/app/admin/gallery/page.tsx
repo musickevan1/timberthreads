@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import ConfirmDialog from '@/components/ConfirmDialog';
@@ -13,8 +13,12 @@ export default function GalleryAdmin() {
   const [activeTab, setActiveTab] = useState<Tab>('projects');
   const [galleryData, setGalleryData] = useState<GalleryState>({ images: [], deletedImages: [] });
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState('');
   const [selectedImage, setSelectedImage] = useState<ImageAsset | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [draggedImage, setDraggedImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [dialogConfig, setDialogConfig] = useState({
     isOpen: false,
     title: '',
@@ -49,32 +53,55 @@ export default function GalleryAdmin() {
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files) return;
+    if (!files || files.length === 0) return;
 
     const file = files[0];
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('caption', file.name.split('.')[0]);
+    formData.append('caption', file.name.split('.')[0].replace(/-/g, ' '));
     formData.append('section', activeTab === 'deleted' ? 'projects' : activeTab);
 
     setIsUploading(true);
+    setUploadProgress(0);
     setUploadError('');
 
     try {
+      // Simulate upload progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          const newProgress = prev + 10;
+          if (newProgress >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return newProgress;
+        });
+      }, 200);
+
       const response = await fetch('/api/gallery', {
         method: 'POST',
         body: formData,
       });
 
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
       if (!response.ok) throw new Error('Failed to upload image');
       
       await fetchGalleryData();
+      
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     } catch (error) {
       console.error('Upload error:', error);
       setUploadError('Failed to upload image. Please try again.');
     } finally {
-      setIsUploading(false);
-      e.target.value = '';
+      setTimeout(() => {
+        setIsUploading(false);
+        setUploadProgress(0);
+      }, 500);
     }
   };
 
@@ -125,6 +152,66 @@ export default function GalleryAdmin() {
     }
   };
 
+  const handleDragStart = (e: React.DragEvent, imageSrc: string) => {
+    setIsDragging(true);
+    setDraggedImage(imageSrc);
+    e.dataTransfer.setData('text/plain', imageSrc);
+    
+    // Create a transparent 1x1 pixel for drag ghost
+    const img = document.createElement('img');
+    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    e.dataTransfer.setDragImage(img, 0, 0);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetImageSrc: string) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    if (!draggedImage || draggedImage === targetImageSrc) return;
+    
+    // Get all images in the current section
+    const sectionImages = [...galleryData.images]
+      .filter(img => img.section === activeTab)
+      .sort((a, b) => (a.order || 999) - (b.order || 999));
+    
+    // Find the indices of the dragged and target images
+    const draggedIndex = sectionImages.findIndex(img => img.src === draggedImage);
+    const targetIndex = sectionImages.findIndex(img => img.src === targetImageSrc);
+    
+    if (draggedIndex === -1 || targetIndex === -1) return;
+    
+    // Reorder the images
+    const newOrder = [...sectionImages];
+    const [removed] = newOrder.splice(draggedIndex, 1);
+    newOrder.splice(targetIndex, 0, removed);
+    
+    // Update the order property of each image
+    const orderedImageSrcs = newOrder.map(img => img.src);
+    
+    try {
+      await fetch(`/api/gallery?action=updateOrder`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          section: activeTab,
+          orderedImages: orderedImageSrcs
+        }),
+      });
+      
+      await fetchGalleryData();
+    } catch (error) {
+      console.error('Error updating image order:', error);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    setDraggedImage(null);
+  };
+
   const confirmSoftDelete = (image: ImageAsset) => {
     setSelectedImage(image);
     setDialogConfig({
@@ -161,9 +248,12 @@ export default function GalleryAdmin() {
     });
   };
 
+  // Get filtered and sorted images for the current tab
   const filteredImages = activeTab === 'deleted' 
     ? galleryData.deletedImages 
-    : galleryData.images.filter(img => img.section === activeTab);
+    : [...galleryData.images]
+        .filter(img => img.section === activeTab)
+        .sort((a, b) => (a.order || 999) - (b.order || 999));
 
   const tabClasses = (tab: Tab) => 
     `px-4 py-2 text-sm font-medium rounded-md ${
@@ -211,6 +301,7 @@ export default function GalleryAdmin() {
           <div className="bg-white p-6 rounded-lg shadow-sm mb-8">
             <h2 className="text-xl font-semibold mb-4">Upload New Image</h2>
             <input
+              ref={fileInputRef}
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
@@ -223,8 +314,29 @@ export default function GalleryAdmin() {
                 hover:file:bg-teal-100
                 disabled:opacity-50"
             />
+            
+            {isUploading && (
+              <div className="mt-4">
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div 
+                    className="bg-teal-600 h-2.5 rounded-full transition-all duration-300" 
+                    style={{ width: `${uploadProgress}%` }}
+                  ></div>
+                </div>
+                <p className="text-sm text-gray-600 mt-1">Uploading: {uploadProgress}%</p>
+              </div>
+            )}
+            
             {uploadError && (
               <p className="mt-2 text-sm text-red-600">{uploadError}</p>
+            )}
+            
+    {activeTab !== 'deleted' as Tab && filteredImages.length > 0 && (
+              <div className="mt-4 p-4 bg-blue-50 rounded-md">
+                <p className="text-sm text-blue-700">
+                  <span className="font-semibold">Tip:</span> You can drag and drop images to reorder them. The order will be reflected on the website.
+                </p>
+              </div>
             )}
           </div>
         )}
@@ -232,7 +344,19 @@ export default function GalleryAdmin() {
         {/* Gallery Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredImages.map((image) => (
-            <div key={image.src} className="bg-white p-4 rounded-lg shadow-sm">
+            <div 
+              key={image.src} 
+              className={`bg-white p-4 rounded-lg shadow-sm ${
+                isDragging && draggedImage === image.src ? 'opacity-50' : ''
+              } ${
+                activeTab !== 'deleted' ? 'cursor-grab' : ''
+              }`}
+              draggable={activeTab !== 'deleted'}
+              onDragStart={(e) => activeTab !== 'deleted' && handleDragStart(e, image.src)}
+              onDragOver={handleDragOver}
+              onDrop={(e) => activeTab !== 'deleted' && handleDrop(e, image.src)}
+              onDragEnd={handleDragEnd}
+            >
               <div className="relative aspect-square mb-4">
                 <Image
                   src={image.src}
@@ -240,6 +364,13 @@ export default function GalleryAdmin() {
                   fill
                   className="object-cover rounded-md"
                 />
+                {activeTab !== 'deleted' && (
+                  <div className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md">
+                    <span className="text-xs font-semibold text-gray-700">
+                      {image.order || '?'}
+                    </span>
+                  </div>
+                )}
               </div>
               <input
                 type="text"
@@ -275,6 +406,16 @@ export default function GalleryAdmin() {
             </div>
           ))}
         </div>
+
+        {filteredImages.length === 0 && (
+          <div className="bg-white p-8 rounded-lg shadow-sm text-center">
+            <p className="text-gray-500">
+              {activeTab === 'deleted' 
+                ? 'No deleted images found.' 
+                : `No images in the ${activeTab} section. Upload some images to get started.`}
+            </p>
+          </div>
+        )}
 
         <ConfirmDialog
           isOpen={dialogConfig.isOpen}

@@ -4,38 +4,54 @@
       "src": "/assets/quilt-display-1.jpeg",
       "alt": "Quilt Display 1",
       "caption": "Beautiful handmade quilt",
-      "section": "projects"
+      "section": "projects",
+      "order": 1
     },
     {
       "src": "/assets/quilt-display-2.jpeg",
       "alt": "Quilt Display 2",
       "caption": "Guest project showcase",
-      "section": "projects"
+      "section": "projects",
+      "order": 2
     },
     {
       "src": "/assets/quilt-display-3.jpeg",
       "alt": "Quilt Display 3",
       "caption": "Seasonal creation",
-      "section": "seasonal"
-    },
-    {
-      "src": "/assets/quilting-workspace.jpeg",
-      "alt": "Quilting Workspace",
-      "caption": "Our spacious workspace",
-      "section": "facility"
+      "section": "seasonal",
+      "order": 1
     },
     {
       "src": "/assets/hero-front-view.jpeg",
       "alt": "Front View",
       "caption": "Welcome to our retreat",
-      "section": "facility"
+      "section": "facility",
+      "order": 1
     },
     {
       "src": "/assets/entrance-driveway.jpeg",
       "alt": "Entrance",
       "caption": "The welcoming entrance",
-      "section": "facility"
+      "section": "facility",
+      "order": 2
+    },
+    {
+      "src": "/assets/quilt-workspace.jpeg",
+      "alt": "quilt-workspace",
+      "caption": "Our spacious workspace",
+      "section": "facility",
+      "order": 3
     }
   ],
-  "deletedImages": []
+  "deletedImages": [
+    {
+      "src": "/assets/quilting-workspace.jpeg",
+      "alt": "Quilting Workspace",
+      "caption": "Our spacious workspace",
+      "section": "facility",
+      "order": 4,
+      "isDeleted": true,
+      "deletedAt": "2025-02-26T00:02:53.333Z"
+    }
+  ]
 }

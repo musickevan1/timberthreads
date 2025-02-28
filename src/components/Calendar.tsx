@@ -2,9 +2,12 @@
 
 export default function Calendar() {
   return (
-    <section id="calendar" className="py-16 px-4 bg-white">
+    <section id="calendar" className="py-24 px-4 bg-white">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-8">Availability Calendar</h2>
+        <div className="text-center mb-16">
+          <h2 className="text-3xl sm:text-4xl font-serif text-stone-800 mb-4">Availability Calendar</h2>
+          <div className="w-24 h-1 bg-teal-600 mx-auto mb-8"></div>
+        </div>
         
         {/* Google Calendar Embed */}
         <div className="relative w-full overflow-hidden" style={{ paddingTop: '75%' }}>
@@ -29,10 +32,25 @@ export default function Calendar() {
           </div>
         </div>
 
+        {/* Meal Options */}
+        <div className="mt-8 bg-gray-50 p-6 rounded-lg">
+          <h3 className="text-xl font-semibold mb-4">Meal Options</h3>
+          <div className="space-y-2">
+            <p>Continental Breakfast & Lunch: $10 per person per day</p>
+            <p>Brunch & Dinner: $12.50 per person per day</p>
+            <p>All 3 Meals: $15 per person per day</p>
+            <p className="text-sm text-gray-600 mt-4">
+              * We can accommodate dietary restrictions and allergies<br />
+              * Full kitchen available if you prefer to bring your own groceries
+            </p>
+          </div>
+        </div>
+
         {/* Contact Note */}
         <div className="mt-6 text-center text-gray-600">
           <p>To check availability and make a reservation, please contact us directly.</p>
           <p>Calendar is updated regularly to reflect current bookings.</p>
+          <p className="mt-2">Our retreat center is located on an island surrounded by a small lake in Clinton, Missouri.</p>
         </div>
       </div>
     </section>

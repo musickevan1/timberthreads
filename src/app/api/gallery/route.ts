@@ -56,11 +56,18 @@ export async function POST(request: NextRequest) {
 
     // Update database
     const db = await getDB();
+    
+    // Find the highest order number for this section
+    const maxOrder = db.images
+      .filter(img => img.section === section)
+      .reduce((max, img) => Math.max(max, img.order || 0), 0);
+    
     const newImage: ImageAsset = {
       src: `/assets/${filename}`,
       alt: filename.split('.')[0],
       caption,
-      section
+      section,
+      order: maxOrder + 1 // Set the new image to be last in order
     };
     
     db.images.push(newImage);
@@ -108,6 +115,14 @@ export async function PATCH(request: NextRequest) {
       if (imageToRestore) {
         delete imageToRestore.isDeleted;
         delete imageToRestore.deletedAt;
+        
+        // Find the highest order number for this section
+        const maxOrder = db.images
+          .filter(img => img.section === imageToRestore.section)
+          .reduce((max, img) => Math.max(max, img.order || 0), 0);
+        
+        imageToRestore.order = maxOrder + 1; // Set the restored image to be last in order
+        
         db.images.push(imageToRestore);
         db.deletedImages = db.deletedImages.filter(img => img.src !== data.src);
       }
@@ -115,6 +130,19 @@ export async function PATCH(request: NextRequest) {
       const image = db.images.find(img => img.src === data.src);
       if (image) {
         image.caption = data.caption;
+      }
+    } else if (action === 'updateOrder') {
+      // Update the order of images in a section
+      const { section, orderedImages } = data;
+      
+      if (section && Array.isArray(orderedImages)) {
+        // Update order for each image in the section
+        orderedImages.forEach((src: string, index: number) => {
+          const image = db.images.find(img => img.src === src && img.section === section);
+          if (image) {
+            image.order = index + 1;
+          }
+        });
       }
     }
 

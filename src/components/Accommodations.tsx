@@ -10,7 +10,7 @@ const Accommodations = () => {
           <h2 className="text-3xl sm:text-4xl font-serif text-stone-800 mb-4">Stay With Us</h2>
           <div className="w-24 h-1 bg-teal-600 mx-auto mb-8"></div>
           <p className="text-lg text-stone-700 max-w-2xl mx-auto">
-            Experience comfort and tranquility in our purpose-built retreat facility.
+            Experience comfort and tranquility in our purpose-built quilting retreat facility.
           </p>
         </div>
 
@@ -18,22 +18,23 @@ const Accommodations = () => {
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="h-64 overflow-hidden">
               <img 
-                src="https://images.unsplash.com/photo-1587061949409-02df41d5e562?q=80&w=800&auto=format&fit=crop"
-                alt="Cozy cabin exterior"
-                className="w-full h-full object-cover"
+                src="/assets/hero-front-view.jpeg"
+                alt="Retreat front view"
+                className="w-full h-full object-cover object-center"
+                style={{ objectPosition: '0 30%' }}
               />
             </div>
             <div className="p-6">
-              <h3 className="text-xl font-serif text-stone-800 mb-3">Cozy Cabins</h3>
+              <h3 className="text-xl font-serif text-stone-800 mb-3">Comfortable Accommodations</h3>
               <p className="text-stone-700 mb-4">
-                Our private cabins offer a perfect blend of rustic charm and modern comfort, 
-                featuring handcrafted furniture and peaceful forest views.
+                Our retreat center is all on one level with comfortable accommodations for your quilting 
+                or crafting group, featuring peaceful lake views.
               </p>
               <ul className="space-y-2 text-stone-700">
-                <li>• Queen-sized beds with premium linens</li>
-                <li>• Private bathroom with organic amenities</li>
-                <li>• Covered porch with seating area</li>
-                <li>• Mini kitchenette</li>
+                <li>• 4 bedrooms with comfortable beds</li>
+                <li>• 2 bathrooms (one with tub/shower, one with walk-in shower)</li>
+                <li>• Bedding and towels provided</li>
+                <li>• Full kitchen with dishwasher</li>
               </ul>
             </div>
           </div>
@@ -41,22 +42,22 @@ const Accommodations = () => {
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="h-64 overflow-hidden">
               <img 
-                src="https://images.unsplash.com/photo-1600585152220-90363fe7e115?q=80&w=800&auto=format&fit=crop"
-                alt="Creative workspace"
+                src="/assets/quilt-workspace.jpeg"
+                alt="Quilting workspace"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="p-6">
-              <h3 className="text-xl font-serif text-stone-800 mb-3">Creative Spaces</h3>
+              <h3 className="text-xl font-serif text-stone-800 mb-3">Creative Workspaces</h3>
               <p className="text-stone-700 mb-4">
-                Dedicated workspaces designed for both individual projects and collaborative 
-                creativity, equipped with everything you need.
+                Our workroom doubles as a living room for family rentals, but is perfectly equipped 
+                for quilting and crafting retreats.
               </p>
               <ul className="space-y-2 text-stone-700">
-                <li>• Well-lit workstations</li>
-                <li>• Professional-grade tools</li>
-                <li>• Storage for materials</li>
-                <li>• 24/7 access</li>
+                <li>• 30 x 60 tables with comfortable leather chairs</li>
+                <li>• 2 cutting tables and 2 ironing stations</li>
+                <li>• Starlink Internet access</li>
+                <li>• Outdoor picnic table for meals or quiet time</li>
               </ul>
             </div>
           </div>

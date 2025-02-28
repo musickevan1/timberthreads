@@ -3,6 +3,7 @@ export interface ImageAsset {
   alt: string;
   caption: string;
   section: 'projects' | 'facility' | 'seasonal';
+  order?: number; // Added for image ordering
   isDeleted?: boolean;
   deletedAt?: string;
 }
