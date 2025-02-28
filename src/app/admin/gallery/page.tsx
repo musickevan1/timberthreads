@@ -18,6 +18,8 @@ export default function GalleryAdmin() {
   const [selectedImage, setSelectedImage] = useState<ImageAsset | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [draggedImage, setDraggedImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [actionInProgress, setActionInProgress] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dialogConfig, setDialogConfig] = useState({
     isOpen: false,
@@ -42,12 +44,15 @@ export default function GalleryAdmin() {
 
   const fetchGalleryData = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch('/api/gallery');
       if (!response.ok) throw new Error('Failed to fetch gallery data');
       const data = await response.json();
       setGalleryData(data);
     } catch (error) {
       console.error('Error fetching gallery data:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -107,34 +112,64 @@ export default function GalleryAdmin() {
 
   const handleSoftDelete = async (image: ImageAsset) => {
     try {
-      await fetch(`/api/gallery?action=softDelete`, {
+      setActionInProgress(true);
+      const response = await fetch(`/api/gallery?action=softDelete`, {
         method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ src: image.src }),
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to remove image');
+      }
+      
       await fetchGalleryData();
     } catch (error) {
       console.error('Error soft deleting image:', error);
+    } finally {
+      setActionInProgress(false);
     }
   };
 
   const handleRestore = async (image: ImageAsset) => {
     try {
-      await fetch(`/api/gallery?action=restore`, {
+      setActionInProgress(true);
+      const response = await fetch(`/api/gallery?action=restore`, {
         method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ src: image.src }),
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to restore image');
+      }
+      
       await fetchGalleryData();
     } catch (error) {
       console.error('Error restoring image:', error);
+    } finally {
+      setActionInProgress(false);
     }
   };
 
   const handleUpdateCaption = async (image: ImageAsset, newCaption: string) => {
     try {
-      await fetch(`/api/gallery?action=updateCaption`, {
+      const response = await fetch(`/api/gallery?action=updateCaption`, {
         method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ src: image.src, caption: newCaption }),
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update caption');
+      }
+      
       await fetchGalleryData();
     } catch (error) {
       console.error('Error updating caption:', error);
@@ -143,12 +178,20 @@ export default function GalleryAdmin() {
 
   const handlePermanentDelete = async (image: ImageAsset) => {
     try {
-      await fetch(`/api/gallery?src=${encodeURIComponent(image.src)}`, {
+      setActionInProgress(true);
+      const response = await fetch(`/api/gallery?src=${encodeURIComponent(image.src)}`, {
         method: 'DELETE',
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to permanently delete image');
+      }
+      
       await fetchGalleryData();
     } catch (error) {
       console.error('Error permanently deleting image:', error);
+    } finally {
+      setActionInProgress(false);
     }
   };
 
@@ -193,17 +236,27 @@ export default function GalleryAdmin() {
     const orderedImageSrcs = newOrder.map(img => img.src);
     
     try {
-      await fetch(`/api/gallery?action=updateOrder`, {
+      setActionInProgress(true);
+      const response = await fetch(`/api/gallery?action=updateOrder`, {
         method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           section: activeTab,
           orderedImages: orderedImageSrcs
         }),
       });
       
+      if (!response.ok) {
+        throw new Error('Failed to update image order');
+      }
+      
       await fetchGalleryData();
     } catch (error) {
       console.error('Error updating image order:', error);
+    } finally {
+      setActionInProgress(false);
     }
   };
 
@@ -277,6 +330,7 @@ export default function GalleryAdmin() {
           <button 
             onClick={() => setActiveTab('projects')} 
             className={tabClasses('projects')}
+            disabled={actionInProgress}
           >
             <div className="flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -288,6 +342,7 @@ export default function GalleryAdmin() {
           <button 
             onClick={() => setActiveTab('facility')} 
             className={tabClasses('facility')}
+            disabled={actionInProgress}
           >
             <div className="flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -299,12 +354,18 @@ export default function GalleryAdmin() {
           <button 
             onClick={() => setActiveTab('deleted')} 
             className={tabClasses('deleted')}
+            disabled={actionInProgress}
           >
             <div className="flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
               Deleted Items
+              {galleryData.deletedImages.length > 0 && (
+                <span className="ml-2 bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded-full">
+                  {galleryData.deletedImages.length}
+                </span>
+              )}
             </div>
           </button>
         </div>
@@ -327,7 +388,7 @@ export default function GalleryAdmin() {
                     type="file"
                     accept="image/*"
                     onChange={handleImageUpload}
-                    disabled={isUploading}
+                    disabled={isUploading || actionInProgress}
                     className="block w-full text-sm text-stone-500
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-md file:border-0
@@ -340,7 +401,7 @@ export default function GalleryAdmin() {
                 
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
+                  disabled={isUploading || actionInProgress}
                   className="flex items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-300 disabled:cursor-not-allowed"
                 >
                   {isUploading ? (
@@ -394,108 +455,122 @@ export default function GalleryAdmin() {
           </div>
         )}
 
-        {/* Gallery Grid */}
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredImages.map((image) => (
-              <div 
-                key={image.src} 
-                className={`bg-white p-4 rounded-lg shadow-sm ${
-                  isDragging && draggedImage === image.src ? 'opacity-50' : ''
-                } ${
-                  activeTab !== 'deleted' ? 'cursor-grab' : ''
-                }`}
-                draggable={activeTab !== 'deleted'}
-                onDragStart={(e) => activeTab !== 'deleted' && handleDragStart(e, image.src)}
-                onDragOver={handleDragOver}
-                onDrop={(e) => activeTab !== 'deleted' && handleDrop(e, image.src)}
-                onDragEnd={handleDragEnd}
-              >
-                <div className="relative aspect-square mb-4">
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    fill
-                    className="object-cover rounded-md"
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="p-12 flex justify-center">
+            <div className="flex flex-col items-center">
+              <svg className="animate-spin h-10 w-10 text-teal-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <p className="text-stone-600">Loading gallery images...</p>
+            </div>
+          </div>
+        ) : (
+          <div className="p-6">
+            {/* Gallery Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredImages.map((image) => (
+                <div 
+                  key={image.src} 
+                  className={`bg-white p-4 rounded-lg shadow-sm border border-stone-200 ${
+                    isDragging && draggedImage === image.src ? 'opacity-50 border-dashed border-teal-500' : ''
+                  } ${
+                    activeTab !== 'deleted' ? 'cursor-grab' : ''
+                  } transition-all duration-200`}
+                  draggable={activeTab !== 'deleted' && !actionInProgress}
+                  onDragStart={(e) => activeTab !== 'deleted' && !actionInProgress && handleDragStart(e, image.src)}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => activeTab !== 'deleted' && !actionInProgress && handleDrop(e, image.src)}
+                  onDragEnd={handleDragEnd}
+                >
+                  <div className="relative aspect-square mb-4 overflow-hidden rounded-md">
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                    {activeTab !== 'deleted' && (
+                      <div className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md">
+                        <span className="text-xs font-semibold text-stone-700">
+                          {image.order || '?'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    value={image.caption}
+                    onChange={(e) => handleUpdateCaption(image, e.target.value)}
+                    className="block w-full px-3 py-2 border border-stone-300 rounded-md shadow-sm text-sm mb-3 focus:ring-teal-500 focus:border-teal-500"
+                    placeholder="Image caption"
+                    disabled={activeTab === 'deleted' || actionInProgress}
                   />
-                  {activeTab !== 'deleted' && (
-                    <div className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md">
-                      <span className="text-xs font-semibold text-gray-700">
-                        {image.order || '?'}
-                      </span>
+                  {activeTab === 'deleted' ? (
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => confirmRestore(image)}
+                        disabled={actionInProgress}
+                        className="flex-1 flex justify-center items-center px-4 py-2 bg-teal-50 text-teal-700 rounded-md text-sm font-medium hover:bg-teal-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {actionInProgress ? (
+                          <svg className="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                          </svg>
+                        )}
+                        Restore
+                      </button>
+                      <button
+                        onClick={() => confirmPermanentDelete(image)}
+                        disabled={actionInProgress}
+                        className="flex-1 flex justify-center items-center px-4 py-2 bg-red-50 text-red-700 rounded-md text-sm font-medium hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {actionInProgress ? (
+                          <svg className="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        )}
+                        Delete Forever
+                      </button>
                     </div>
+                  ) : (
+                    <button
+                      onClick={() => confirmSoftDelete(image)}
+                      disabled={actionInProgress}
+                      className="w-full flex justify-center items-center px-4 py-2 bg-red-50 text-red-700 rounded-md text-sm font-medium hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {actionInProgress ? (
+                        <svg className="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      )}
+                      Remove
+                    </button>
                   )}
                 </div>
-                <input
-                  type="text"
-                  value={image.caption}
-                  onChange={(e) => handleUpdateCaption(image, e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm mb-2"
-                  placeholder="Image caption"
-                  disabled={activeTab === 'deleted'}
-                />
-                {activeTab === 'deleted' ? (
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => confirmRestore(image)}
-                      className="flex-1 px-4 py-2 bg-teal-50 text-teal-700 rounded-md text-sm font-medium hover:bg-teal-100"
-                    >
-                      Restore
-                    </button>
-                    <button
-                      onClick={() => confirmPermanentDelete(image)}
-                      className="flex-1 px-4 py-2 bg-red-50 text-red-700 rounded-md text-sm font-medium hover:bg-red-100"
-                    >
-                      Delete Forever
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => confirmSoftDelete(image)}
-                    className="w-full px-4 py-2 bg-red-50 text-red-700 rounded-md text-sm font-medium hover:bg-red-100"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
-            ))}
-            
-            {filteredImages.length === 0 && (
-              <div className="col-span-3 bg-stone-50 p-8 rounded-lg border border-stone-200 text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-stone-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p className="text-stone-600 mb-4">
-                  {activeTab === 'deleted' 
-                    ? 'No deleted images found.' 
-                    : `No images in the ${activeTab} section.`}
-                </p>
-                {activeTab !== 'deleted' && (
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    Upload Your First Image
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <ConfirmDialog
-          isOpen={dialogConfig.isOpen}
-          onClose={() => setDialogConfig(prev => ({ ...prev, isOpen: false }))}
-          title={dialogConfig.title}
-          message={dialogConfig.message}
-          confirmText={dialogConfig.confirmText}
-          type={dialogConfig.type}
-          onConfirm={dialogConfig.onConfirm}
-        />
-      </div>
-    </div>
-  );
-}
+              ))}
+              
+              {filteredImages.length === 0 && (
+                <div className="col-span-3 bg-stone-50 p-8 rounded-lg border border-stone-200 text-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-stone-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <p className="text-stone-600 mb-4">
+                    {activeTab === 'deleted'
