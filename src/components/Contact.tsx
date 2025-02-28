@@ -18,15 +18,26 @@ const Contact = () => {
             <div className="space-y-4 text-stone-700">
               <p className="flex items-center">
                 <span className="w-20 font-medium">Email:</span>
-                <span>contact@timberandthreads.com</span>
+                <a href="mailto:sandra.delapp@gmail.com" className="text-teal-600 hover:text-teal-800 hover:underline">
+                  sandra.delapp@gmail.com
+                </a>
               </p>
               <p className="flex items-center">
                 <span className="w-20 font-medium">Phone:</span>
-                <span>Please contact via email</span>
+                <a href="tel:+14173431473" className="text-teal-600 hover:text-teal-800 hover:underline">
+                  +1 (417) 343-1473
+                </a>
               </p>
-              <p className="flex items-center">
+              <p className="flex items-start">
                 <span className="w-20 font-medium">Address:</span>
-                <span>Clinton, MO</span>
+                <a 
+                  href="https://maps.google.com/?q=306+NW+300+Rd,+Clinton+MO" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-teal-600 hover:text-teal-800 hover:underline"
+                >
+                  306 NW 300 Rd, Clinton MO
+                </a>
               </p>
             </div>
           </div>
