@@ -81,14 +81,7 @@ export default function AdminLayout({
         {children}
       </main>
 
-      {/* Admin Footer */}
-      <footer className="bg-white border-t border-stone-200 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-sm text-stone-500">
-            &copy; {new Date().getFullYear()} Timber & Threads Retreat Admin Panel
-          </p>
-        </div>
-      </footer>
+      {/* Footer removed to prevent it from covering gallery options */}
     </div>
   );
 }
