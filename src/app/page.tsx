@@ -8,6 +8,8 @@ import Accommodations from '../components/Accommodations';
 import Calendar from '../components/Calendar';
 import Gallery from '../components/Gallery';
 import Contact from '../components/Contact';
+import Footer from '../components/Footer';
+
 export default function Home() {
   return (
     <main className="flex-1">
@@ -19,6 +21,7 @@ export default function Home() {
       <Calendar />
       <Gallery />
       <Contact />
+      <Footer />
     </main>
   );
 }

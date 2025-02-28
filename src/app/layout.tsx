@@ -40,7 +40,7 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.className} min-h-screen flex flex-col`}>
         {children}
-        <Footer />
+        {/* Footer removed to prevent it from covering gallery options */}
       </body>
     </html>
   );
