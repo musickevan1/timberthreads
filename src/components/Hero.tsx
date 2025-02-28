@@ -53,6 +53,33 @@ const Hero = () => {
           Learn More
         </Link>
       </div>
+      <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none">
+        <div className="flex justify-center">
+          <Link
+            to="about"
+            smooth="easeInOutQuart"
+            duration={1000}
+            offset={-70}
+            className="inline-block text-white/70 hover:text-white cursor-pointer transition-all hover:scale-105 pointer-events-auto pb-4"
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="h-6 w-6"
+              style={{ animation: 'subtleBounce 3s ease-in-out infinite' }}
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M19 14l-7 7m0 0l-7-7m7 7V3" 
+              />
+            </svg>
+          </Link>
+        </div>
+      </div>
     </section>
   );
 };

@@ -33,7 +33,16 @@ const NavBar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <div className="flex-shrink-0">
-            <span className="text-2xl font-serif text-stone-800">Timber & Threads</span>
+            <Link
+              to="hero"
+              smooth="easeInOutQuart"
+              duration={1000}
+              offset={-70}
+              className="cursor-pointer group"
+            >
+              <span className="text-2xl font-serif text-stone-800 group-hover:text-teal-700 transition-colors">Timber & Threads</span>
+              <div className="w-0 h-1 bg-teal-600 group-hover:w-full transition-all duration-300"></div>
+            </Link>
           </div>
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-10">
