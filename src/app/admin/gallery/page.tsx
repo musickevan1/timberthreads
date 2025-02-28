@@ -6,7 +6,7 @@ import Image from 'next/image';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { ImageAsset, GalleryState } from '@/app/api/gallery/types';
 
-type Tab = 'projects' | 'facility' | 'seasonal' | 'deleted';
+type Tab = 'projects' | 'facility' | 'deleted';
 
 export default function GalleryAdmin() {
   const router = useRouter();
@@ -286,9 +286,6 @@ export default function GalleryAdmin() {
             </button>
             <button onClick={() => setActiveTab('facility')} className={tabClasses('facility')}>
               Facility
-            </button>
-            <button onClick={() => setActiveTab('seasonal')} className={tabClasses('seasonal')}>
-              Seasonal
             </button>
             <button onClick={() => setActiveTab('deleted')} className={tabClasses('deleted')}>
               Deleted Items

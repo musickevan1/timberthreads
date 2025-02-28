@@ -7,8 +7,7 @@ import { ImageAsset } from '@/app/api/gallery/types';
 // Map API sections to display categories
 const sectionToCategory = {
   'facility': ['exterior', 'interior'],
-  'projects': ['projects'],
-  'seasonal': ['seasonal']
+  'projects': ['projects']
 };
 
 // Function to determine category based on section and image properties
@@ -65,7 +64,6 @@ export default function Gallery() {
   const exteriorImages = galleryImages.filter(img => determineCategory(img) === 'exterior');
   const interiorImages = galleryImages.filter(img => determineCategory(img) === 'interior');
   const projectImages = galleryImages.filter(img => determineCategory(img) === 'projects');
-  const seasonalImages = galleryImages.filter(img => determineCategory(img) === 'seasonal');
 
   if (isLoading) {
     return (
@@ -180,30 +178,6 @@ export default function Gallery() {
           </div>
         )}
 
-        {/* Seasonal Creations */}
-        {seasonalImages.length > 0 && (
-          <div className="mb-12">
-            <h3 className="text-2xl font-semibold mb-6">Seasonal Creations</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {seasonalImages.map((image, index) => (
-                <div key={image.src} className="relative group">
-                  <div className="aspect-square relative overflow-hidden rounded-lg shadow-md">
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 33vw"
-                    />
-                  </div>
-                  <div className="mt-2 text-center">
-                    <p className="text-sm text-gray-600">{image.caption}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Guest Experience Note */}
         <div className="mt-12 text-center">
