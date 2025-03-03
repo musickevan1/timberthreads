@@ -16,7 +16,7 @@ export default function Calendar() {
         <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-12">
           <div className="relative w-full overflow-hidden" style={{ paddingTop: '75%' }}>
             <iframe
-              src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23ffffff&ctz=America%2FChicago&showTitle=0&showNav=1&showPrint=0&showTabs=1&showCalendars=0"
+              src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FChicago&title=Availability%20Calendar&showPrint=0&src=YzYwMDhmYTYwZDJhOTBkZTRjZDczYWJlNDEwYzc3ZWRkZWRkNjhmNTI5MmQ2YTY3OGE2MTQ1YTk1OTRhMDJmZkBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23A79B8E"
               className="absolute top-0 left-0 w-full h-full border-0"
               frameBorder="0"
               scrolling="no"
