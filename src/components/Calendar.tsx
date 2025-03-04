@@ -16,12 +16,22 @@ export default function Calendar() {
         <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-12">
           <div className="relative w-full overflow-hidden" style={{ paddingTop: '75%' }}>
             <iframe
-              src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FChicago&title=Availability%20Calendar&showPrint=0&src=YzYwMDhmYTYwZDJhOTBkZTRjZDczYWJlNDEwYzc3ZWRkZWRkNjhmNTI5MmQ2YTY3OGE2MTQ1YTk1OTRhMDJmZkBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23A79B8E"
+              src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FChicago&title=Availability%20Calendar&showPrint=0&src=dGltYmVyYW5kdGhyZWFkczI0QGdtYWlsLmNvbQ&color=%23039BE5"
               className="absolute top-0 left-0 w-full h-full border-0"
               frameBorder="0"
               scrolling="no"
             ></iframe>
           </div>
+        </div>
+
+        {/* Contact Note */}
+        <div className="text-center max-w-2xl mx-auto">
+          <p className="text-lg text-stone-700 mb-4">
+            To check availability and make a reservation, please contact us directly.
+          </p>
+          <p className="text-stone-600">
+            Calendar is updated regularly to reflect current bookings.
+          </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 mb-12">
@@ -77,17 +87,6 @@ export default function Calendar() {
               </ul>
             </div>
           </div>
-        </div>
-
-        {/* Contact Note */}
-        <div className="text-center max-w-2xl mx-auto">
-          <p className="text-lg text-stone-700 mb-4">
-            To check availability and make a reservation, please contact us directly.
-            Our retreat center is located on an island surrounded by a small lake in Clinton, Missouri.
-          </p>
-          <p className="text-stone-600">
-            Calendar is updated regularly to reflect current bookings.
-          </p>
         </div>
       </div>
     </section>
