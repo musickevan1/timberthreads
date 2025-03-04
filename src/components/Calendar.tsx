@@ -25,11 +25,18 @@ export default function Calendar() {
         </div>
 
         {/* Contact Note */}
-        <div className="text-center max-w-2xl mx-auto">
+        <div className="bg-white rounded-lg shadow-sm p-8 text-center max-w-3xl mx-auto mb-12">
+          <div className="flex items-center justify-center mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-serif text-stone-800 text-center mb-6">Contact Information</h3>
           <p className="text-lg text-stone-700 mb-4">
             To check availability and make a reservation, please contact us directly.
+            Our retreat center is located on an island surrounded by a small lake in Clinton, Missouri.
           </p>
-          <p className="text-stone-600">
+          <p className="text-stone-600 italic">
             Calendar is updated regularly to reflect current bookings.
           </p>
         </div>
