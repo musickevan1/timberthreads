@@ -34,7 +34,6 @@ export default function Calendar() {
           <h3 className="text-xl font-serif text-stone-800 text-center mb-6">Contact Information</h3>
           <p className="text-lg text-stone-700 mb-4">
             To check availability and make a reservation, please contact us directly.
-            Our retreat center is located on an island surrounded by a small lake in Clinton, Missouri.
           </p>
           <p className="text-stone-600 italic">
             Calendar is updated regularly to reflect current bookings.
