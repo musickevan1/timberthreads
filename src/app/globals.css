@@ -1,3 +1,4 @@
+/* These are Tailwind CSS directives - ignore linting errors */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -27,5 +28,78 @@ body {
   }
   50% {
     transform: translateY(10px);
+  }
+}
+
+/* Gallery drag and drop styles */
+.drop-target {
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 0 0 2px #0d9488;
+  transform: scale(1.02);
+  transition: all 0.2s ease;
+}
+
+.drop-target::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(20, 184, 166, 0.1);
+  border-radius: 0.5rem;
+  z-index: -1;
+}
+
+/* Mobile touch drag styles */
+.touch-dragging {
+  opacity: 0.7;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+  z-index: 100;
+  position: relative;
+}
+
+.touch-dragging::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(20, 184, 166, 0.2);
+  border: 2px dashed #0d9488;
+  border-radius: 0.5rem;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Gallery hint styles */
+.gallery-hint {
+  display: block;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: rgba(20, 184, 166, 0.1);
+  border-radius: 0.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #0d9488;
+}
+
+/* No longer adding the Tip: prefix to avoid duplication */
+
+/* Hide desktop drag and drop elements on mobile */
+@media (max-width: 768px) {
+  .desktop-only-drag {
+    display: none;
+  }
+}
+
+/* Hide mobile reordering elements on desktop */
+@media (min-width: 769px) {
+  .mobile-only-reorder {
+    display: none;
   }
 }
