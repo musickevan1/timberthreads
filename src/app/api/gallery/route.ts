@@ -251,14 +251,36 @@ export async function PATCH(request: NextRequest) {
         );
       }
       
-      // Update order for each image in the section
-      orderedImages.forEach((src: string, index: number) => {
-        const image = db.images.find(img => img.src === src && img.section === section);
-        if (image) {
-          image.order = index + 1;
-          console.log(`Updated order for ${src} to ${index + 1}`);
-        }
-      });
+      // Check if we're in production (Vercel)
+      const isProduction = process.env.VERCEL === '1';
+      console.log('Environment:', isProduction ? 'Production (Vercel)' : 'Development');
+      
+      if (isProduction) {
+        console.log('WARNING: In production environment, changes will not persist');
+        // Update order in memory (will be lost on next deployment)
+        orderedImages.forEach((src: string, index: number) => {
+          const image = db.images.find(img => img.src === src && img.section === section);
+          if (image) {
+            image.order = index + 1;
+            console.log(`Updated order for ${src} to ${index + 1} (temporary)`);
+          }
+        });
+        
+        // Return success even though changes won't persist
+        return NextResponse.json({
+          message: 'Order updated (Note: Changes are temporary in production)',
+          data: db
+        });
+      } else {
+        // In development, update order and save to file
+        orderedImages.forEach((src: string, index: number) => {
+          const image = db.images.find(img => img.src === src && img.section === section);
+          if (image) {
+            image.order = index + 1;
+            console.log(`Updated order for ${src} to ${index + 1}`);
+          }
+        });
+      }
     } else {
       return NextResponse.json(
         { error: `Unknown action: ${action}` },
