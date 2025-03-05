@@ -98,15 +98,7 @@ export async function POST(request: NextRequest) {
       alt: filename.split('.')[0],
       caption,
       section,
-      order: maxOrder + 1, // Set the new image to be last in order
-      
-      // Cloudinary specific fields
-      publicId: uploadResult.public_id,
-      cloudinaryUrl: uploadResult.secure_url,
-      width: uploadResult.width,
-      height: uploadResult.height,
-      format: uploadResult.format,
-      resourceType: uploadResult.resource_type
+      order: maxOrder + 1 // Set the new image to be last in order
     };
     
     db.images.push(newImage);
@@ -313,12 +305,9 @@ export async function DELETE(request: NextRequest) {
     // Find the image to delete
     const imageToDelete = db.deletedImages.find(img => img.src === src);
     
-    if (imageToDelete && imageToDelete.publicId) {
-      // Temporarily comment out Cloudinary deletion
-      console.log('Would delete from Cloudinary:', imageToDelete.publicId);
-      // In a real implementation, we would call:
-      // await deleteImage(imageToDelete.publicId);
-    }
+    // Temporarily comment out Cloudinary deletion
+    console.log('Would delete from storage:', src);
+    // In a real implementation, we would delete the file from storage
 
     // Remove from deleted images
     db.deletedImages = db.deletedImages.filter(img => img.src !== src);

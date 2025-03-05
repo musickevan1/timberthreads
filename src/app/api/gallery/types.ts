@@ -2,8 +2,8 @@ export interface ImageAsset {
   src: string;
   alt: string;
   caption: string;
-  section: 'projects' | 'facility';
-  order?: number; // Added for image ordering
+  section: 'quilts' | 'workshops' | 'accommodations';
+  order?: number;
   isDeleted?: boolean;
   deletedAt?: string;
 }
