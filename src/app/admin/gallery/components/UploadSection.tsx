@@ -10,7 +10,7 @@ interface UploadSectionProps {
   uploadProgress: number;
   uploadError: string;
   actionInProgress: boolean;
-  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement> | File) => void;
+  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement> | File) => Promise<void> | void;
 }
 
 const UploadSection: React.FC<UploadSectionProps> = ({
