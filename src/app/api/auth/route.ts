@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Authentication API endpoint for secure server-side password verification
 export async function POST(request: NextRequest) {
   try {
     const { password } = await request.json();
