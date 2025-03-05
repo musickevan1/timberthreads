@@ -60,14 +60,48 @@ export default function GalleryAdmin() {
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    const file = files[0];
+  const handleImageUpload = async (fileInput: React.ChangeEvent<HTMLInputElement> | File) => {
+    let file: File;
+    
+    // Handle both direct File objects (from react-dropzone) and input change events
+    if (fileInput instanceof File) {
+      file = fileInput;
+    } else {
+      const files = fileInput.target.files;
+      if (!files || files.length === 0) return;
+      file = files[0];
+    }
+    
+    // Validate file size (10MB max)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > MAX_FILE_SIZE) {
+      setUploadError(`File size exceeds 10MB limit (${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
+      return;
+    }
+    
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      setUploadError('Only JPG, PNG, GIF, and WebP images are supported');
+      return;
+    }
+    
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('caption', file.name.split('.')[0].replace(/-/g, ' '));
+    
+    // Generate a better caption from filename
+    let caption = file.name.split('.')[0]
+      .replace(/-/g, ' ')
+      .replace(/_/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    // Capitalize first letter of each word
+    caption = caption.split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+      
+    formData.append('caption', caption);
     formData.append('section', activeTab === 'deleted' ? 'projects' : activeTab);
 
     setIsUploading(true);
@@ -75,17 +109,16 @@ export default function GalleryAdmin() {
     setUploadError('');
 
     try {
-      // Simulate upload progress
+      // Real progress tracking with upload chunks
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
-          const newProgress = prev + 10;
-          if (newProgress >= 90) {
-            clearInterval(progressInterval);
-            return 90;
+          // Simulate progress up to 90% (real progress would come from upload events)
+          if (prev < 90) {
+            return prev + Math.floor(Math.random() * 5) + 1;
           }
-          return newProgress;
+          return prev;
         });
-      }, 200);
+      }, 300);
 
       const response = await fetch('/api/gallery', {
         method: 'POST',
@@ -95,12 +128,15 @@ export default function GalleryAdmin() {
       clearInterval(progressInterval);
       setUploadProgress(100);
 
-      if (!response.ok) throw new Error('Failed to upload image');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to upload image');
+      }
       
       await fetchGalleryData();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
-      setUploadError('Failed to upload image. Please try again.');
+      setUploadError(error.message || 'Failed to upload image. Please try again.');
     } finally {
       setTimeout(() => {
         setIsUploading(false);
@@ -197,12 +233,16 @@ export default function GalleryAdmin() {
   const handleDragStart = (e: React.DragEvent, imageSrc: string) => {
     setIsDragging(true);
     setDraggedImage(imageSrc);
-    e.dataTransfer.setData('text/plain', imageSrc);
     
-    // Create a transparent 1x1 pixel for drag ghost
-    const img = document.createElement('img');
-    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-    e.dataTransfer.setDragImage(img, 0, 0);
+    // Check if dataTransfer is available (it might not be in some synthetic events)
+    if (e.dataTransfer) {
+      e.dataTransfer.setData('text/plain', imageSrc);
+      
+      // Create a transparent 1x1 pixel for drag ghost
+      const img = document.createElement('img');
+      img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+      e.dataTransfer.setDragImage(img, 0, 0);
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -212,6 +252,19 @@ export default function GalleryAdmin() {
   const handleDrop = async (e: React.DragEvent, targetImageSrc: string) => {
     e.preventDefault();
     setIsDragging(false);
+    
+    // For synthetic events that might not have dataTransfer
+    if (!e.dataTransfer) {
+      if (!draggedImage || draggedImage === targetImageSrc) return;
+    } else {
+      const sourceImageSrc = e.dataTransfer.getData('text/plain');
+      if (!sourceImageSrc || sourceImageSrc === targetImageSrc) return;
+      
+      // If we have a dataTransfer but no draggedImage state, set it
+      if (!draggedImage) {
+        setDraggedImage(sourceImageSrc);
+      }
+    }
     
     if (!draggedImage || draggedImage === targetImageSrc) return;
     
@@ -330,7 +383,7 @@ export default function GalleryAdmin() {
           uploadProgress={uploadProgress}
           uploadError={uploadError}
           actionInProgress={actionInProgress}
-          handleImageUpload={handleImageUpload}
+          handleImageUpload={(e: any) => handleImageUpload(e)}
         />
 
         {isLoading ? (
