@@ -4,15 +4,9 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ImageAsset } from '@/app/api/gallery/types';
 
-// Map API sections to display categories
-const sectionToCategory = {
-  'facility': ['exterior', 'interior'],
-  'projects': ['projects']
-};
-
 // Function to determine category based on section and image properties
 const determineCategory = (image: ImageAsset): string => {
-  if (image.section === 'facility') {
+  if (image.section === 'workshops' || image.section === 'accommodations') {
     // Determine if it's exterior or interior based on the image path or caption
     if (image.src.includes('front') || 
         image.src.includes('entrance') || 
@@ -23,7 +17,7 @@ const determineCategory = (image: ImageAsset): string => {
     }
     return 'interior';
   }
-  return image.section;
+  return 'projects'; // quilts section maps to projects
 };
 
 export default function Gallery() {
@@ -177,7 +171,6 @@ export default function Gallery() {
             </div>
           </div>
         )}
-
 
         {/* Guest Experience Note */}
         <div className="mt-12 text-center">
