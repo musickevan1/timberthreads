@@ -20,13 +20,22 @@ export default function AdminLogin() {
     }
   }, [router]);
 
-  const handlePasswordLogin = () => {
+  const handlePasswordLogin = async () => {
     setIsLoading(true);
     setError('');
     
-    // Simulate a slight delay for better UX
-    setTimeout(() => {
-      if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
+    try {
+      const response = await fetch('/api/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
         sessionStorage.setItem('isAuthenticated', 'true');
         router.push('/admin/gallery');
       } else {
@@ -34,7 +43,11 @@ export default function AdminLogin() {
         setPassword('');
         setIsLoading(false);
       }
-    }, 500);
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('An error occurred during login. Please try again.');
+      setIsLoading(false);
+    }
   };
 
   return (
