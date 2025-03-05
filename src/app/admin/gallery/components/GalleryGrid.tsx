@@ -348,6 +348,9 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
       // Get the ordered image sources
       const orderedImageSrcs = localImages.map(img => img.src);
       
+      console.log('Applying changes for section:', activeTab);
+      console.log('Ordered images:', orderedImageSrcs);
+      
       // Call the API directly to update the order
       const response = await fetch(`/api/gallery?action=updateOrder`, {
         method: 'PATCH',
@@ -360,8 +363,11 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
         }),
       });
       
+      const responseData = await response.json();
+      console.log('API response:', responseData);
+      
       if (!response.ok) {
-        throw new Error('Failed to update image order');
+        throw new Error(responseData.error || 'Failed to update image order');
       }
       
       alert('Changes applied successfully!');
@@ -375,9 +381,19 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
 
   return (
     <div className="p-6">
-      {/* Apply Changes button - only visible for non-deleted tabs with images */}
+      {/* Instructions and Apply Changes button - only visible for non-deleted tabs with images */}
       {(activeTab as string) !== 'deleted' && localImages.length > 0 && (
         <div className="mb-6">
+          <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
+            <h3 className="text-blue-800 font-medium mb-2">Reordering Instructions</h3>
+            <p className="text-blue-700 text-sm mb-2">
+              Use the <strong>up and down arrow buttons</strong> on each image to change their order. 
+              Drag and drop may not work reliably on all devices.
+            </p>
+            <p className="text-blue-700 text-sm">
+              After reordering, click the <strong>Apply Changes</strong> button below to save your changes and update the website.
+            </p>
+          </div>
           <button
             onClick={applyChanges}
             disabled={actionInProgress}

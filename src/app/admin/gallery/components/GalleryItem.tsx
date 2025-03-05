@@ -101,9 +101,9 @@ const GalleryItem: React.FC<GalleryItemProps> = ({
       } transition-all duration-200 h-full`}
     >
       <div className="relative aspect-square mb-4 overflow-hidden rounded-md">
-        {/* Mobile reordering buttons - only visible on mobile */}
+        {/* Reordering buttons - visible on all devices */}
         {activeTab !== 'deleted' && handleMoveUp && handleMoveDown && (
-          <div className="absolute left-2 top-2 flex flex-col space-y-2 md:hidden z-10">
+          <div className="absolute left-2 top-2 flex flex-col space-y-2 z-10">
             <button
               onClick={() => handleMoveUp && handleMoveUp(image)}
               disabled={isFirst || actionInProgress}
