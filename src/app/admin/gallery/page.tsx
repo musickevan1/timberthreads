@@ -13,6 +13,18 @@ import UploadSection from './components/UploadSection';
 import LoadingState from './components/LoadingState';
 import GalleryGrid from './components/GalleryGrid';
 
+// Map admin tabs to image sections
+const getImageSection = (tab: Tab): ImageAsset['section'] => {
+  switch (tab) {
+    case 'projects':
+      return 'quilts';
+    case 'facility':
+      return 'workshops'; // Default to workshops for facility tab
+    default:
+      return 'quilts'; // Default for deleted tab
+  }
+};
+
 export default function GalleryAdmin() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>('projects');
@@ -102,7 +114,7 @@ export default function GalleryAdmin() {
       .join(' ');
       
     formData.append('caption', caption);
-    formData.append('section', activeTab === 'deleted' ? 'projects' : activeTab);
+    formData.append('section', getImageSection(activeTab));
 
     setIsUploading(true);
     setUploadProgress(0);
@@ -270,7 +282,11 @@ export default function GalleryAdmin() {
     
     // Get all images in the current section
     const sectionImages = [...galleryData.images]
-      .filter(img => img.section === activeTab)
+      .filter(img => {
+        if (activeTab === 'projects') return img.section === 'quilts';
+        if (activeTab === 'facility') return ['workshops', 'accommodations'].includes(img.section);
+        return true; // For 'deleted' tab
+      })
       .sort((a, b) => (a.order || 999) - (b.order || 999));
     
     // Find the indices of the dragged and target images
@@ -295,7 +311,7 @@ export default function GalleryAdmin() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          section: activeTab,
+          section: getImageSection(activeTab),
           orderedImages: orderedImageSrcs
         }),
       });
@@ -357,7 +373,11 @@ export default function GalleryAdmin() {
   const filteredImages = activeTab === 'deleted' 
     ? galleryData.deletedImages 
     : [...galleryData.images]
-        .filter(img => img.section === activeTab)
+        .filter(img => {
+          if (activeTab === 'projects') return img.section === 'quilts';
+          if (activeTab === 'facility') return ['workshops', 'accommodations'].includes(img.section);
+          return true;
+        })
         .sort((a, b) => (a.order || 999) - (b.order || 999));
 
   const handleCloseDialog = () => {
