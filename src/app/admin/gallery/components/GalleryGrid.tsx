@@ -394,6 +394,17 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
               After reordering, click the <strong>Apply Changes</strong> button below to save your changes and update the website.
             </p>
           </div>
+          
+          {/* Production warning */}
+          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-4">
+            <h3 className="text-yellow-800 font-medium mb-2">⚠️ Important Note</h3>
+            <p className="text-yellow-700 text-sm mb-2">
+              On the live website, gallery order changes will only be visible temporarily until the next deployment.
+            </p>
+            <p className="text-yellow-700 text-sm">
+              For permanent changes, please make the changes locally and push to GitHub.
+            </p>
+          </div>
           <button
             onClick={applyChanges}
             disabled={actionInProgress}

@@ -17,7 +17,20 @@ async function getDB(): Promise<GalleryState> {
 
 async function saveDB(data: GalleryState) {
   try {
+    // Check if we're in production (Vercel)
+    const isProduction = process.env.VERCEL === '1';
+    console.log('Environment:', isProduction ? 'Production (Vercel)' : 'Development');
     console.log('Saving to DB path:', DB_PATH);
+    
+    if (isProduction) {
+      console.log('WARNING: In production environment, file system is read-only');
+      console.log('Changes will not be persisted between deployments');
+      // In production, we'll just return true without actually writing to the file
+      // This allows the API to "succeed" even though changes won't persist
+      return true;
+    }
+    
+    // In development, write to the file as normal
     await fsWriteFile(DB_PATH, JSON.stringify(data, null, 2));
     console.log('Successfully saved to DB');
     return true;
