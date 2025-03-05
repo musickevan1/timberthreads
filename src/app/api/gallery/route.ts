@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { readFile, writeFile as fsWriteFile } from 'fs/promises';
 import path from 'path';
 import { ImageAsset, GalleryState } from './types';
-import cloudinary, { uploadImage, deleteImage } from '@/lib/cloudinary';
+import cloudinary, { uploadImage, deleteImage } from '../../../lib/cloudinary';
 
 const DB_PATH = path.join(process.cwd(), 'src', 'app', 'api', 'gallery', 'db.json');
 
