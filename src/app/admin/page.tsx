@@ -26,7 +26,7 @@ export default function AdminLogin() {
     
     // Simulate a slight delay for better UX
     setTimeout(() => {
-      if (password === 'timberandthreads2024') {
+      if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
         sessionStorage.setItem('isAuthenticated', 'true');
         router.push('/admin/gallery');
       } else {
@@ -35,15 +35,6 @@ export default function AdminLogin() {
         setIsLoading(false);
       }
     }, 500);
-  };
-
-  // For development/testing only - should be removed in production
-  const handleTestLogin = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      sessionStorage.setItem('isAuthenticated', 'true');
-      router.push('/admin/gallery');
-    }, 300);
   };
 
   return (
@@ -142,19 +133,6 @@ export default function AdminLogin() {
               </Link>
             </div>
           </div>
-        </div>
-        
-        {/* Development/testing button - remove in production */}
-        <div className="mt-6 bg-white p-4 rounded-lg shadow-sm border border-stone-200">
-          <p className="text-xs text-stone-500 mb-2 text-center">Development/Testing Only</p>
-          <button
-            type="button"
-            onClick={handleTestLogin}
-            disabled={isLoading}
-            className="w-full flex justify-center py-2 px-4 border border-stone-300 rounded-md shadow-sm text-xs font-medium text-stone-700 bg-stone-100 hover:bg-stone-200 focus:outline-none"
-          >
-            {isLoading ? 'Loading...' : 'Test Login (Bypass Password)'}
-          </button>
         </div>
       </div>
     </div>
