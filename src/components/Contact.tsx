@@ -1,6 +1,89 @@
 'use client';
 
+import { useState } from 'react';
+
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [status, setStatus] = useState({
+    submitting: false,
+    submitted: false,
+    success: false,
+    error: ''
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate form
+    if (!formData.name || !formData.email || !formData.message) {
+      setStatus({
+        submitting: false,
+        submitted: true,
+        success: false,
+        error: 'Please fill out all fields'
+      });
+      return;
+    }
+    
+    setStatus({
+      submitting: true,
+      submitted: false,
+      success: false,
+      error: ''
+    });
+    
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Something went wrong');
+      }
+      
+      // Success
+      setStatus({
+        submitting: false,
+        submitted: true,
+        success: true,
+        error: ''
+      });
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        message: ''
+      });
+      
+    } catch (error) {
+      setStatus({
+        submitting: false,
+        submitted: true,
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to send message'
+      });
+    }
+  };
+
   return (
     <section id="contact" className="bg-white py-24 mb-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,7 +127,7 @@ const Contact = () => {
 
           <div className="bg-stone-50 rounded-lg p-8">
             <h3 className="text-xl font-serif text-stone-800 mb-4">Quick Inquiry</h3>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-stone-800 mb-1">
                   Name
@@ -54,6 +137,8 @@ const Contact = () => {
                   id="name"
                   className="w-full px-4 py-2 rounded-md border-stone-200 focus:border-teal-500 focus:ring-teal-500"
                   placeholder="Your name"
+                  value={formData.name}
+                  onChange={handleChange}
                 />
               </div>
               <div>
@@ -65,6 +150,8 @@ const Contact = () => {
                   id="email"
                   className="w-full px-4 py-2 rounded-md border-stone-200 focus:border-teal-500 focus:ring-teal-500"
                   placeholder="Your email"
+                  value={formData.email}
+                  onChange={handleChange}
                 />
               </div>
               <div>
@@ -76,14 +163,26 @@ const Contact = () => {
                   rows={4}
                   className="w-full px-4 py-2 rounded-md border-stone-200 focus:border-teal-500 focus:ring-teal-500"
                   placeholder="Your message"
+                  value={formData.message}
+                  onChange={handleChange}
                 ></textarea>
               </div>
               <button
                 type="submit"
                 className="w-full bg-teal-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-teal-700 transition-colors"
+                disabled={status.submitting}
               >
-                Send Message
+                {status.submitting ? 'Sending...' : 'Send Message'}
               </button>
+              
+              {status.submitted && (
+                <div className={`mt-4 p-3 rounded-md ${status.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                  {status.success 
+                    ? 'Your message has been sent successfully! We will get back to you soon.' 
+                    : `Error: ${status.error}`
+                  }
+                </div>
+              )}
             </form>
           </div>
         </div>
