@@ -1,5 +1,6 @@
-feat: improve site navigation and update contact info
+feat: add Facebook connection section
 
-- Update contact email to timberandthreads24@gmail.com
-- Add smooth scroll to hero "Contact Us to Book" button
-- Add "Contact Us" button to Calendar section with smooth scroll
+- Create new Connect component with Facebook link and preview
+- Update CSP in next.config.js to allow Facebook content
+- Style Connect section to match site design
+- Add direct link to Facebook page

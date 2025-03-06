@@ -8,6 +8,7 @@ import Accommodations from '../components/Accommodations';
 import Calendar from '../components/Calendar';
 import Gallery from '../components/Gallery';
 import Contact from '../components/Contact';
+import Connect from '../components/Connect';
 import Footer from '../components/Footer';
 
 export default function Home() {
@@ -21,6 +22,7 @@ export default function Home() {
       <Calendar />
       <Gallery />
       <Contact />
+      <Connect />
       <Footer />
     </main>
   );
