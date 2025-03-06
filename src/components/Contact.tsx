@@ -18,8 +18,8 @@ const Contact = () => {
             <div className="space-y-4 text-stone-700">
               <p className="flex items-center">
                 <span className="w-20 font-medium">Email:</span>
-                <a href="mailto:sandra.delapp@gmail.com" className="text-teal-600 hover:text-teal-800 hover:underline">
-                  sandra.delapp@gmail.com
+                <a href="mailto:timberandthreads24@gmail.com" className="text-teal-600 hover:text-teal-800 hover:underline">
+                  timberandthreads24@gmail.com
                 </a>
               </p>
               <p className="flex items-center">

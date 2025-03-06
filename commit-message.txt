@@ -1,22 +1,5 @@
-feat: enhance gallery and admin functionality
+feat: improve site navigation and update contact info
 
-Gallery Improvements:
-- Add mobile-friendly lightbox with pinch-to-zoom
-- Fix close button positioning to avoid header overlap
-- Improve navigation controls and visibility
-- Add touch gestures for mobile navigation
-- Add clear mobile instructions
-
-Admin Panel Enhancements:
-- Add apply changes button for reordering
-- Improve reordering UI with immediate feedback
-- Add unsaved changes warning
-- Fix section change functionality
-- Improve error handling and loading states
-
-Technical Updates:
-- Create ZoomableImage component for touch interactions
-- Improve z-index management for overlays
-- Add proper event handling and propagation
-- Enhance type safety across components
-- Add accessibility improvements with ARIA labels
+- Update contact email to timberandthreads24@gmail.com
+- Add smooth scroll to hero "Contact Us to Book" button
+- Add "Contact Us" button to Calendar section with smooth scroll

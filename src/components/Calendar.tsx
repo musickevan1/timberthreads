@@ -1,6 +1,14 @@
 'use client';
 
 export default function Calendar() {
+  const scrollToContact = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section id="calendar" className="py-24 bg-stone-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -35,9 +43,18 @@ export default function Calendar() {
           <p className="text-lg text-stone-700 mb-4">
             To check availability and make a reservation, please contact us directly.
           </p>
-          <p className="text-stone-600 italic">
+          <p className="text-stone-600 italic mb-6">
             Calendar is updated regularly to reflect current bookings.
           </p>
+          <button
+            onClick={scrollToContact}
+            className="inline-flex items-center px-6 py-3 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            Contact Us
+          </button>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 mb-12">
