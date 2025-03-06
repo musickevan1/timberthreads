@@ -21,7 +21,7 @@ export default function Footer() {
             </Link>
             <span>•</span>
             <a 
-              href="mailto:contact@timberandthreads.com"
+              href="mailto:timberandthreads24@gmail.com"
               className="hover:text-gray-600 transition-colors duration-200"
             >
               Contact
