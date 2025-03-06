@@ -1,57 +1,125 @@
 {
   "images": [
     {
-      "src": "/assets/quilt-display-1.jpeg",
-      "alt": "Quilt Display 1",
+      "src": "/assets/gallery/hero-front-view.jpeg",
+      "alt": "Front View of the Retreat",
+      "caption": "Welcome to Timber & Threads Retreat",
+      "section": "Facility",
+      "order": 1,
+      "metadata": {
+        "uploadedAt": "2025-03-05T05:28:13.000Z"
+      }
+    },
+    {
+      "src": "/assets/gallery/entrance-driveway.jpeg",
+      "alt": "Entrance and Driveway",
+      "caption": "Welcoming entrance and driveway",
+      "section": "Facility",
+      "order": 2,
+      "metadata": {
+        "uploadedAt": "2025-03-05T05:28:13.000Z"
+      }
+    },
+    {
+      "src": "/assets/gallery/hero-porch-view.jpeg",
+      "alt": "Porch View",
+      "caption": "Relaxing porch area",
+      "section": "Facility",
+      "order": 3,
+      "metadata": {
+        "uploadedAt": "2025-03-05T05:28:13.000Z"
+      }
+    },
+    {
+      "src": "/assets/gallery/workshop.jpeg",
+      "alt": "Workshop Area",
+      "caption": "Spacious workshop space",
+      "section": "Facility",
+      "order": 4,
+      "metadata": {
+        "uploadedAt": "2025-03-05T05:28:13.000Z"
+      }
+    },
+    {
+      "src": "/assets/gallery/kitchen.jpeg",
+      "alt": "Kitchen",
+      "caption": "Fully equipped kitchen",
+      "section": "Facility",
+      "order": 6,
+      "metadata": {
+        "uploadedAt": "2025-03-05T05:28:13.000Z"
+      }
+    },
+    {
+      "src": "/assets/gallery/bedroom-1.jpeg",
+      "alt": "Bedroom One",
+      "caption": "Comfortable bedroom accommodation",
+      "section": "Facility",
+      "order": 7,
+      "metadata": {
+        "uploadedAt": "2025-03-05T05:28:13.000Z"
+      }
+    },
+    {
+      "src": "/assets/gallery/bedroom-2.jpeg",
+      "alt": "Bedroom Two",
+      "caption": "Additional bedroom space",
+      "section": "Facility",
+      "order": 8,
+      "metadata": {
+        "uploadedAt": "2025-03-05T05:28:13.000Z"
+      }
+    },
+    {
+      "src": "/assets/gallery/bathroom.jpeg",
+      "alt": "Bathroom",
+      "caption": "Clean and modern bathroom",
+      "section": "Facility",
+      "order": 9,
+      "metadata": {
+        "uploadedAt": "2025-03-05T05:28:13.000Z"
+      }
+    },
+    {
+      "src": "/assets/gallery/quilt-workspace.jpeg",
+      "alt": "Quilting Workspace",
+      "caption": "Dedicated quilting workspace",
+      "section": "Facility",
+      "order": 5,
+      "metadata": {
+        "uploadedAt": "2025-03-05T05:28:13.000Z"
+      }
+    },
+    {
+      "src": "/assets/gallery/quilt-display-1.jpeg",
+      "alt": "Quilt Display One",
       "caption": "Beautiful handmade quilt",
-      "section": "projects",
-      "order": 1
+      "section": "Quilting",
+      "order": 1,
+      "metadata": {
+        "uploadedAt": "2025-03-05T05:28:13.000Z"
+      }
     },
     {
-      "src": "/assets/quilt-display-2.jpeg",
-      "alt": "Quilt Display 2",
+      "src": "/assets/gallery/quilt-display-2.jpeg",
+      "alt": "Quilt Display Two",
       "caption": "Guest project showcase",
-      "section": "projects",
-      "order": 2
+      "section": "Quilting",
+      "order": 2,
+      "metadata": {
+        "uploadedAt": "2025-03-05T05:28:13.000Z"
+      }
     },
     {
-      "src": "/assets/quilt-display-3.jpeg",
-      "alt": "Quilt Display 3",
-      "caption": "Guest project showcase",
-      "section": "projects",
-      "order": 3
-    },
-    {
-      "src": "/assets/hero-front-view.jpeg",
-      "alt": "Front View",
-      "caption": "Welcome to our retreat",
-      "section": "facility",
-      "order": 1
-    },
-    {
-      "src": "/assets/entrance-driveway.jpeg",
-      "alt": "Entrance",
-      "caption": "The welcoming entrance",
-      "section": "facility",
-      "order": 2
-    },
-    {
-      "src": "/assets/quilt-workspace.jpeg",
-      "alt": "quilt-workspace",
-      "caption": "Our spacious workspace",
-      "section": "facility",
-      "order": 3
+      "src": "/assets/gallery/quilt-display-3.jpeg",
+      "alt": "Quilt Display Three",
+      "caption": "Stunning quilt creation",
+      "section": "Quilting",
+      "order": 4,
+      "metadata": {
+        "uploadedAt": "2025-03-05T05:28:13.000Z"
+      }
     }
   ],
-  "deletedImages": [
-    {
-      "src": "/assets/quilting-workspace.jpeg",
-      "alt": "Quilting Workspace",
-      "caption": "Our spacious workspace",
-      "section": "facility",
-      "order": 4,
-      "isDeleted": true,
-      "deletedAt": "2025-02-26T00:02:53.333Z"
-    }
-  ]
+  "deletedImages": []
 }

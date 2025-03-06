@@ -24,28 +24,28 @@ const About = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="aspect-square rounded-lg overflow-hidden">
               <img 
-                src="/assets/quilt-workspace.jpeg"
+                src="/assets/gallery/quilt-workspace.jpeg"
                 alt="Quilting workspace"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="aspect-square rounded-lg overflow-hidden mt-8">
               <img 
-                src="/assets/quilt-display-1.jpeg"
+                src="/assets/gallery/quilt-display-1.jpeg"
                 alt="Quilt display"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="aspect-square rounded-lg overflow-hidden -mt-8">
               <img 
-                src="/assets/quilt-display-2.jpeg"
+                src="/assets/gallery/quilt-display-2.jpeg"
                 alt="Quilt display"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="aspect-square rounded-lg overflow-hidden">
               <img 
-                src="/assets/quilt-display-3.jpeg"
+                src="/assets/gallery/quilt-display-3.jpeg"
                 alt="Quilt display"
                 className="w-full h-full object-cover"
               />

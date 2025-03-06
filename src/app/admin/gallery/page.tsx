@@ -16,25 +16,23 @@ import GalleryGrid from './components/GalleryGrid';
 // Map admin tabs to image sections
 const getImageSection = (tab: Tab): ImageAsset['section'] => {
   switch (tab) {
-    case 'projects':
-      return 'quilts';
-    case 'facility':
-      return 'workshops'; // Default to workshops for facility tab
+    case 'Facility':
+      return 'Facility';
+    case 'Quilting':
+      return 'Quilting';
     default:
-      return 'quilts'; // Default for deleted tab
+      return 'Facility'; // Default for deleted tab
   }
 };
 
 export default function GalleryAdmin() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<Tab>('projects');
+  const [activeTab, setActiveTab] = useState<Tab>('Facility');
   const [galleryData, setGalleryData] = useState<GalleryState>({ images: [], deletedImages: [] });
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState('');
   const [selectedImage, setSelectedImage] = useState<ImageAsset | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [draggedImage, setDraggedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [actionInProgress, setActionInProgress] = useState(false);
   const [dialogConfig, setDialogConfig] = useState<DialogConfig>({
@@ -75,7 +73,6 @@ export default function GalleryAdmin() {
   const handleImageUpload = async (fileInput: React.ChangeEvent<HTMLInputElement> | File) => {
     let file: File;
     
-    // Handle both direct File objects (from react-dropzone) and input change events
     if (fileInput instanceof File) {
       file = fileInput;
     } else {
@@ -84,14 +81,12 @@ export default function GalleryAdmin() {
       file = files[0];
     }
     
-    // Validate file size (10MB max)
-    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
       setUploadError(`File size exceeds 10MB limit (${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
       return;
     }
     
-    // Validate file type
     const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     if (!validTypes.includes(file.type)) {
       setUploadError('Only JPG, PNG, GIF, and WebP images are supported');
@@ -101,14 +96,12 @@ export default function GalleryAdmin() {
     const formData = new FormData();
     formData.append('file', file);
     
-    // Generate a better caption from filename
     let caption = file.name.split('.')[0]
       .replace(/-/g, ' ')
       .replace(/_/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
     
-    // Capitalize first letter of each word
     caption = caption.split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
@@ -121,15 +114,8 @@ export default function GalleryAdmin() {
     setUploadError('');
 
     try {
-      // Real progress tracking with upload chunks
       const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          // Simulate progress up to 90% (real progress would come from upload events)
-          if (prev < 90) {
-            return prev + Math.floor(Math.random() * 5) + 1;
-          }
-          return prev;
-        });
+        setUploadProgress(prev => prev < 90 ? prev + Math.floor(Math.random() * 5) + 1 : prev);
       }, 300);
 
       const response = await fetch('/api/gallery', {
@@ -242,95 +228,30 @@ export default function GalleryAdmin() {
     }
   };
 
-  const handleDragStart = (e: React.DragEvent, imageSrc: string) => {
-    setIsDragging(true);
-    setDraggedImage(imageSrc);
-    
-    // Check if dataTransfer is available (it might not be in some synthetic events)
-    if (e.dataTransfer) {
-      e.dataTransfer.setData('text/plain', imageSrc);
-      
-      // Create a transparent 1x1 pixel for drag ghost
-      const img = document.createElement('img');
-      img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-      e.dataTransfer.setDragImage(img, 0, 0);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = async (e: React.DragEvent, targetImageSrc: string) => {
-    e.preventDefault();
-    setIsDragging(false);
-    
-    // For synthetic events that might not have dataTransfer
-    if (!e.dataTransfer) {
-      if (!draggedImage || draggedImage === targetImageSrc) return;
-    } else {
-      const sourceImageSrc = e.dataTransfer.getData('text/plain');
-      if (!sourceImageSrc || sourceImageSrc === targetImageSrc) return;
-      
-      // If we have a dataTransfer but no draggedImage state, set it
-      if (!draggedImage) {
-        setDraggedImage(sourceImageSrc);
-      }
-    }
-    
-    if (!draggedImage || draggedImage === targetImageSrc) return;
-    
-    // Get all images in the current section
-    const sectionImages = [...galleryData.images]
-      .filter(img => {
-        if (activeTab === 'projects') return img.section === 'quilts';
-        if (activeTab === 'facility') return ['workshops', 'accommodations'].includes(img.section);
-        return true; // For 'deleted' tab
-      })
-      .sort((a, b) => (a.order || 999) - (b.order || 999));
-    
-    // Find the indices of the dragged and target images
-    const draggedIndex = sectionImages.findIndex(img => img.src === draggedImage);
-    const targetIndex = sectionImages.findIndex(img => img.src === targetImageSrc);
-    
-    if (draggedIndex === -1 || targetIndex === -1) return;
-    
-    // Reorder the images
-    const newOrder = [...sectionImages];
-    const [removed] = newOrder.splice(draggedIndex, 1);
-    newOrder.splice(targetIndex, 0, removed);
-    
-    // Update the order property of each image
-    const orderedImageSrcs = newOrder.map(img => img.src);
-    
+  const handleSectionChange = async (image: ImageAsset, newSection: ImageAsset['section']) => {
     try {
       setActionInProgress(true);
-      const response = await fetch(`/api/gallery?action=updateOrder`, {
+      const response = await fetch(`/api/gallery?action=updateSection`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          section: getImageSection(activeTab),
-          orderedImages: orderedImageSrcs
+          src: image.src,
+          newSection
         }),
       });
       
       if (!response.ok) {
-        throw new Error('Failed to update image order');
+        throw new Error('Failed to update section');
       }
       
       await fetchGalleryData();
     } catch (error) {
-      console.error('Error updating image order:', error);
+      console.error('Error updating section:', error);
     } finally {
       setActionInProgress(false);
     }
-  };
-
-  const handleDragEnd = () => {
-    setIsDragging(false);
-    setDraggedImage(null);
   };
 
   const confirmSoftDelete = (image: ImageAsset) => {
@@ -373,11 +294,7 @@ export default function GalleryAdmin() {
   const filteredImages = activeTab === 'deleted' 
     ? galleryData.deletedImages 
     : [...galleryData.images]
-        .filter(img => {
-          if (activeTab === 'projects') return img.section === 'quilts';
-          if (activeTab === 'facility') return ['workshops', 'accommodations'].includes(img.section);
-          return true;
-        })
+        .filter(img => img.section === getImageSection(activeTab))
         .sort((a, b) => (a.order || 999) - (b.order || 999));
 
   const handleCloseDialog = () => {
@@ -412,17 +329,12 @@ export default function GalleryAdmin() {
           <GalleryGrid 
             filteredImages={filteredImages}
             activeTab={activeTab}
-            isDragging={isDragging}
-            draggedImage={draggedImage}
             actionInProgress={actionInProgress}
-            handleDragStart={handleDragStart}
-            handleDragOver={handleDragOver}
-            handleDrop={handleDrop}
-            handleDragEnd={handleDragEnd}
             handleUpdateCaption={handleUpdateCaption}
             confirmSoftDelete={confirmSoftDelete}
             confirmRestore={confirmRestore}
             confirmPermanentDelete={confirmPermanentDelete}
+            handleSectionChange={handleSectionChange}
           />
         )}
       </div>

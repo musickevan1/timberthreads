@@ -57,7 +57,7 @@ export default function AdminLogin() {
           <div className="flex flex-col items-center">
             <div className="relative w-32 h-32 mb-4">
               <Image
-                src="/assets/logo.png"
+                src="/assets/gallery/logo.png"
                 alt="Timber & Threads Logo"
                 fill
                 className="object-contain"

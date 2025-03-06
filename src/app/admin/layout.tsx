@@ -26,7 +26,7 @@ export default function AdminLayout({
             <div className="flex items-center space-x-4">
               <div className="relative w-8 h-8">
                 <Image
-                  src="/assets/logo.png"
+                  src="/assets/gallery/logo.png"
                   alt="Timber & Threads Logo"
                   fill
                   className="object-contain"

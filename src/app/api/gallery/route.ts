@@ -206,7 +206,35 @@ export async function PATCH(request: NextRequest) {
           );
         }
       }
-    } else if (action === 'updateOrder') {
+} else if (action === 'updateSection') {
+      const { src, newSection } = data;
+      
+      // Find the image in active images
+      const imageIndex = db.images.findIndex(img => img.src === src);
+      
+      if (imageIndex === -1) {
+        return NextResponse.json(
+          { error: 'Image not found' },
+          { status: 404 }
+        );
+      }
+      
+      // Get the highest order number for the new section
+      const maxOrder = db.images
+        .filter(img => img.section === newSection)
+        .reduce((max, img) => Math.max(max, img.order || 0), 0);
+      
+      // Update the image's section and order
+      db.images[imageIndex].section = newSection;
+      db.images[imageIndex].order = maxOrder + 1;
+      
+      await saveDB(db);
+      
+      return NextResponse.json({
+        message: 'Section updated successfully',
+        data: db
+      });
+} else if (action === 'updateOrder') {
       // Update the order of images in a section
       const { section, orderedImages } = data;
       

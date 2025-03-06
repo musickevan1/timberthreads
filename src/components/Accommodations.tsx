@@ -18,7 +18,7 @@ const Accommodations = () => {
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="h-64 overflow-hidden">
               <img 
-                src="/assets/hero-front-view.jpeg"
+                src="/assets/gallery/hero-front-view.jpeg"
                 alt="Retreat front view"
                 className="w-full h-full object-cover object-center"
                 style={{ objectPosition: '0 30%' }}
@@ -42,7 +42,7 @@ const Accommodations = () => {
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="h-64 overflow-hidden">
               <img 
-                src="/assets/quilt-workspace.jpeg"
+                src="/assets/gallery/quilt-workspace.jpeg"
                 alt="Quilting workspace"
                 className="w-full h-full object-cover"
               />

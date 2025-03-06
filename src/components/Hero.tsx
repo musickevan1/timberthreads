@@ -8,7 +8,7 @@ const Hero = () => {
     <section id="hero" className="relative h-screen flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src="/assets/hero-front-view.jpeg"
+          src="/assets/gallery/hero-front-view.jpeg"
           alt="Timber & Threads Retreat Center"
           fill
           priority
@@ -28,7 +28,7 @@ const Hero = () => {
         <div className="relative w-40 h-40 mx-auto mb-6">
           <div className="absolute inset-0 bg-white/5 rounded-full blur-xl"></div>
           <Image
-            src="/assets/logo.png"
+            src="/assets/gallery/logo.png"
             alt="Timber & Threads Logo"
             fill
             priority

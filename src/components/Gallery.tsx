@@ -3,27 +3,19 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ImageAsset } from '@/app/api/gallery/types';
+import LightboxGallery from './LightboxGallery';
 
-// Function to determine category based on section and image properties
-const determineCategory = (image: ImageAsset): string => {
-  if (image.section === 'workshops' || image.section === 'accommodations') {
-    // Determine if it's exterior or interior based on the image path or caption
-    if (image.src.includes('front') || 
-        image.src.includes('entrance') || 
-        image.src.includes('driveway') ||
-        image.caption.toLowerCase().includes('entrance') ||
-        image.caption.toLowerCase().includes('welcome')) {
-      return 'exterior';
-    }
-    return 'interior';
-  }
-  return 'projects'; // quilts section maps to projects
+// Function to sort images by order
+const sortByOrder = (a: ImageAsset, b: ImageAsset): number => {
+  return a.order - b.order;
 };
 
 export default function Gallery() {
   const [galleryImages, setGalleryImages] = useState<ImageAsset[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [currentSection, setCurrentSection] = useState<'Facility' | 'Quilting' | null>(null);
 
   useEffect(() => {
     const fetchGalleryData = async () => {
@@ -54,10 +46,13 @@ export default function Gallery() {
     fetchGalleryData();
   }, []);
 
-  // Group images by category
-  const exteriorImages = galleryImages.filter(img => determineCategory(img) === 'exterior');
-  const interiorImages = galleryImages.filter(img => determineCategory(img) === 'interior');
-  const projectImages = galleryImages.filter(img => determineCategory(img) === 'projects');
+  // Group images by section
+  const facilityImages = galleryImages
+    .filter(img => img.section === 'Facility')
+    .sort(sortByOrder);
+  const quiltingImages = galleryImages
+    .filter(img => img.section === 'Quilting')
+    .sort(sortByOrder);
 
   if (isLoading) {
     return (
@@ -95,20 +90,29 @@ export default function Gallery() {
           <div className="w-24 h-1 bg-teal-600 mx-auto mb-8"></div>
         </div>
         
-        {/* Exterior Views */}
-        {exteriorImages.length > 0 && (
+        {/* Facility Images */}
+        {facilityImages.length > 0 && (
           <div className="mb-12">
-            <h3 className="text-2xl font-semibold mb-6">Retreat Center & Surroundings</h3>
+            <h3 className="text-2xl font-semibold mb-6">Our Facility</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {exteriorImages.map((image, index) => (
-                <div key={image.src} className="relative group">
+              {facilityImages.map((image) => (
+                <div 
+                  key={image.src} 
+                  className="relative group cursor-pointer"
+                  onClick={() => {
+                    setSelectedImageIndex(facilityImages.indexOf(image));
+                    setCurrentSection('Facility');
+                  }}
+                >
                   <div className="aspect-video relative overflow-hidden rounded-lg shadow-md">
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 z-10"></div>
                     <Image
                       src={image.src}
                       alt={image.alt}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      quality={85}
                       priority
                     />
                   </div>
@@ -121,20 +125,29 @@ export default function Gallery() {
           </div>
         )}
 
-        {/* Interior Spaces */}
-        {interiorImages.length > 0 && (
+        {/* Quilting Gallery */}
+        {quiltingImages.length > 0 && (
           <div className="mb-12">
-            <h3 className="text-2xl font-semibold mb-6">Creative Spaces</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {interiorImages.map((image, index) => (
-                <div key={image.src} className="relative group">
+            <h3 className="text-2xl font-semibold mb-6">Quilting Gallery</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {quiltingImages.map((image) => (
+                <div 
+                  key={image.src} 
+                  className="relative group cursor-pointer"
+                  onClick={() => {
+                    setSelectedImageIndex(quiltingImages.indexOf(image));
+                    setCurrentSection('Quilting');
+                  }}
+                >
                   <div className="aspect-video relative overflow-hidden rounded-lg shadow-md">
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 z-10"></div>
                     <Image
                       src={image.src}
                       alt={image.alt}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, 50vw"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      quality={85}
                       priority
                     />
                   </div>
@@ -147,40 +160,36 @@ export default function Gallery() {
           </div>
         )}
 
-        {/* Guest Projects */}
-        {projectImages.length > 0 && (
-          <div className="mb-12">
-            <h3 className="text-2xl font-semibold mb-6">Guest Creations</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {projectImages.map((image, index) => (
-                <div key={image.src} className="relative group">
-                  <div className="aspect-square relative overflow-hidden rounded-lg shadow-md">
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 33vw"
-                    />
-                  </div>
-                  <div className="mt-2 text-center">
-                    <p className="text-sm text-gray-600">{image.caption}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+        {/* Empty State */}
+        {facilityImages.length === 0 && quiltingImages.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-600">No images available at the moment.</p>
           </div>
         )}
 
         {/* Guest Experience Note */}
-        <div className="mt-12 text-center">
-          <p className="text-gray-600">
-            Experience the tranquility and creative inspiration at Timber & Threads Retreat.
-            <br />
-            Join us for your next crafting getaway!
-          </p>
-        </div>
+        {(facilityImages.length > 0 || quiltingImages.length > 0) && (
+          <div className="mt-12 text-center">
+            <p className="text-gray-600">
+              Experience the tranquility and creative inspiration at Timber & Threads Retreat.
+              <br />
+              Join us for your next crafting getaway!
+            </p>
+          </div>
+        )}
       </div>
+
+      {/* Lightbox */}
+      {selectedImageIndex !== null && currentSection && (
+        <LightboxGallery
+          images={currentSection === 'Facility' ? facilityImages : quiltingImages}
+          initialIndex={selectedImageIndex}
+          onClose={() => {
+            setSelectedImageIndex(null);
+            setCurrentSection(null);
+          }}
+        />
+      )}
     </section>
   );
 }

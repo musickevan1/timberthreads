@@ -1,9 +1,16 @@
 export interface ImageAsset {
-  src: string;
+  src: string; // Will now store local path like '/assets/gallery/filename.jpg'
   alt: string;
   caption: string;
-  section: 'quilts' | 'workshops' | 'accommodations';
-  order?: number;
+  section: 'Facility' | 'Quilting';
+  order: number; // Make order required
+  metadata?: {
+    uploadedAt: string;
+    dimensions?: {
+      width: number;
+      height: number;
+    }
+  };
   isDeleted?: boolean;
   deletedAt?: string;
 }
