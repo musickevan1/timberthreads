@@ -13,9 +13,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    console.log('Email credentials:', {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS ? '****' : 'missing',
+      recipient: process.env.RECIPIENT_EMAIL || 'fallback email'
+    });
+
     // Create a transporter
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true, // use SSL
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
@@ -44,9 +52,17 @@ export async function POST(req: NextRequest) {
     };
 
     // Send email
-    await transporter.sendMail(mailOptions);
-
-    return NextResponse.json({ success: true });
+    try {
+      const info = await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully:', info.response);
+      return NextResponse.json({ success: true, messageId: info.messageId });
+    } catch (error: any) {
+      console.error('Specific email sending error:', error);
+      return NextResponse.json(
+        { error: `Email sending failed: ${error.message || 'Unknown error'}` },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error('Error sending email:', error);
     return NextResponse.json(
