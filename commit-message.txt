@@ -1,6 +1,6 @@
-feat: add Facebook connection section
+feat: configure email service for contact form
 
-- Create new Connect component with Facebook link and preview
-- Update CSP in next.config.js to allow Facebook content
-- Style Connect section to match site design
-- Add direct link to Facebook page
+- Set up dedicated noreply email for form submissions
+- Configure nodemailer with Gmail SMTP
+- Update environment variables with proper credentials
+- Set client email as recipient for form submissions
