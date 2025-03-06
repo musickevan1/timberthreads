@@ -21,16 +21,6 @@
       }
     },
     {
-      "src": "/assets/gallery/hero-porch-view.jpeg",
-      "alt": "Porch View",
-      "caption": "Relaxing porch area",
-      "section": "Facility",
-      "order": 3,
-      "metadata": {
-        "uploadedAt": "2025-03-05T05:28:13.000Z"
-      }
-    },
-    {
       "src": "/assets/gallery/workshop.jpeg",
       "alt": "Workshop Area",
       "caption": "Spacious workshop space",
@@ -116,6 +106,16 @@
       "caption": "Stunning quilt creation",
       "section": "Quilting",
       "order": 4,
+      "metadata": {
+        "uploadedAt": "2025-03-05T05:28:13.000Z"
+      }
+    },
+    {
+      "src": "/assets/gallery/hero-porch-view.jpeg",
+      "alt": "Porch View",
+      "caption": "Relaxing porch area",
+      "section": "Facility",
+      "order": 3,
       "metadata": {
         "uploadedAt": "2025-03-05T05:28:13.000Z"
       }
