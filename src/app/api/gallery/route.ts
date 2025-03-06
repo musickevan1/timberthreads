@@ -150,11 +150,27 @@ export async function PATCH(request: NextRequest) {
     if (action === 'softDelete') {
       const imageToDelete = db.images.find(img => img.src === data.src);
       if (imageToDelete) {
-        imageToDelete.isDeleted = true;
-        imageToDelete.deletedAt = new Date().toISOString();
-        db.deletedImages.push(imageToDelete);
+        // Create a deep copy of the image to avoid reference issues
+        const deletedImage = { ...imageToDelete };
+        deletedImage.isDeleted = true;
+        deletedImage.deletedAt = new Date().toISOString();
+        
+        // Add to deletedImages
+        db.deletedImages.push(deletedImage);
+        
+        // Remove from images
         db.images = db.images.filter(img => img.src !== data.src);
+        
         console.log('Image soft deleted:', data.src);
+        
+        // Reorder remaining images in the same section
+        const remainingImagesInSection = db.images
+          .filter(img => img.section === deletedImage.section)
+          .sort((a, b) => a.order - b.order);
+        
+        remainingImagesInSection.forEach((img, index) => {
+          img.order = index + 1;
+        });
       } else {
         console.log('Image not found for soft delete:', data.src);
         return NextResponse.json(
@@ -165,18 +181,27 @@ export async function PATCH(request: NextRequest) {
     } else if (action === 'restore') {
       const imageToRestore = db.deletedImages.find(img => img.src === data.src);
       if (imageToRestore) {
-        delete imageToRestore.isDeleted;
-        delete imageToRestore.deletedAt;
+        // Create a deep copy of the image
+        const restoredImage = { ...imageToRestore };
+        
+        // Remove deletion metadata
+        delete restoredImage.isDeleted;
+        delete restoredImage.deletedAt;
         
         // Find the highest order number for this section
         const maxOrder = db.images
-          .filter(img => img.section === imageToRestore.section)
+          .filter(img => img.section === restoredImage.section)
           .reduce((max, img) => Math.max(max, img.order || 0), 0);
         
-        imageToRestore.order = maxOrder + 1; // Set the restored image to be last in order
+        // Set the restored image to be last in order
+        restoredImage.order = maxOrder + 1;
         
-        db.images.push(imageToRestore);
+        // Add back to images
+        db.images.push(restoredImage);
+        
+        // Remove from deletedImages
         db.deletedImages = db.deletedImages.filter(img => img.src !== data.src);
+        
         console.log('Image restored:', data.src);
       } else {
         console.log('Image not found for restore:', data.src);
