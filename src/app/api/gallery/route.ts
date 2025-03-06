@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFile, writeFile as fsWriteFile } from 'fs/promises';
+import { readFile, writeFile as fsWriteFile, mkdir } from 'fs/promises';
 import path from 'path';
+import sharp from 'sharp';
 import { ImageAsset, GalleryState } from './types';
 // Temporarily comment out cloudinary import to fix build issues
 // import cloudinary, { uploadImage, deleteImage } from '../../../lib/cloudinary';
@@ -69,21 +70,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate file size (50MB limit)
+    if (file.size > 50 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: 'File size exceeds 50MB limit' },
+        { status: 400 }
+      );
+    }
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Temporarily comment out Cloudinary upload
-    const filename = file.name.toLowerCase().replace(/\s+/g, '-');
-    
-    // Mock upload result for now
-    const uploadResult = {
-      secure_url: `/assets/${filename}`,
-      public_id: `timber-threads/${section}/${filename.split('.')[0]}`,
-      width: 800,
-      height: 600,
-      format: 'jpg',
-      resource_type: 'image'
-    };
+    // Optimize and resize image
+    const optimizedImageBuffer = await sharp(buffer)
+      .resize({ 
+        width: 1920,  // Max width for web
+        height: 1080, // Max height for web
+        fit: 'inside', 
+        withoutEnlargement: true 
+      })
+      .webp({ quality: 80 }) // Convert to WebP with 80% quality
+      .toBuffer();
+
+    // Generate filename
+    const filename = `${file.name.split('.')[0]}-${Date.now()}.webp`.toLowerCase().replace(/\s+/g, '-');
+    const publicPath = `/assets/gallery/${filename}`;
+
+    // Save optimized image to public directory
+    const publicDir = path.join(process.cwd(), 'public', 'assets', 'gallery');
+    await mkdir(publicDir, { recursive: true });
+    await fsWriteFile(path.join(publicDir, filename), optimizedImageBuffer);
 
     // Update database
     const db = await getDB();
@@ -94,11 +110,18 @@ export async function POST(request: NextRequest) {
       .reduce((max, img) => Math.max(max, img.order || 0), 0);
     
     const newImage: ImageAsset = {
-      src: uploadResult.secure_url,
-      alt: filename.split('.')[0],
+      src: publicPath,
+      alt: file.name.split('.')[0],
       caption,
       section,
-      order: maxOrder + 1 // Set the new image to be last in order
+      order: maxOrder + 1, // Set the new image to be last in order
+      metadata: {
+        uploadedAt: new Date().toISOString(),
+        dimensions: {
+          width: (await sharp(optimizedImageBuffer).metadata()).width || 0,
+          height: (await sharp(optimizedImageBuffer).metadata()).height || 0
+        }
+      }
     };
     
     db.images.push(newImage);
@@ -111,7 +134,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error uploading file:', error);
     return NextResponse.json(
-      { error: 'Error uploading file' },
+      { error: `Error uploading file: ${error instanceof Error ? error.message : 'Unknown error'}` },
       { status: 500 }
     );
   }
