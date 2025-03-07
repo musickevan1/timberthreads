@@ -26,6 +26,7 @@ const NavBar: React.FC = () => {
     { title: 'Calendar', to: 'calendar' },
     { title: 'Gallery', to: 'gallery' },
     { title: 'Contact', to: 'contact' },
+    { title: 'Location', to: 'location' },
   ];
 
   return (
