@@ -1,7 +1,6 @@
-fix: improve gallery management functionality
+fix: resolve sharp module import for gallery uploads
 
-- Enhance soft delete and restore image operations
-- Implement automatic reordering when images are deleted or restored
-- Add deep copy to prevent reference issues in image manipulation
-- Improve logging and error handling for gallery operations
-- Ensure consistent order management across sections
+- Reinstall sharp and @types/sharp packages
+- Restore sharp import in gallery route
+- Ensure image optimization functionality works
+- Maintain existing image upload and processing logic

@@ -9,6 +9,7 @@ import Calendar from '../components/Calendar';
 import Gallery from '../components/Gallery';
 import Contact from '../components/Contact';
 import Connect from '../components/Connect';
+import Map from '../components/Map';
 import Footer from '../components/Footer';
 
 export default function Home() {
@@ -22,6 +23,7 @@ export default function Home() {
       <Calendar />
       <Gallery />
       <Contact />
+      <Map />
       <Connect />
       <Footer />
     </main>
