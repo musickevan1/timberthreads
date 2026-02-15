@@ -96,10 +96,10 @@ Plans:
   2. Invoice includes Evan Musick as provider and Timber & Threads Retreat contact info as client
   3. Invoice total is in the $400-600 range
   4. Invoice format is professional and ready to send
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 05-01: TBD
+- [ ] 05-01-PLAN.md — Verify invoice completeness and readiness for client delivery
 
 ## Progress
 
@@ -114,7 +114,7 @@ Note: Phase 5 (Invoice) is independent and can execute at any point.
 | 2. Gallery Migration | 0/TBD | Not started | - |
 | 3. Video Integration | 0/TBD | Blocked (awaiting Feb 15 shoot) | - |
 | 4. Performance Optimization | 0/TBD | Not started | - |
-| 5. Invoice | 0/TBD | Not started | - |
+| 5. Invoice | 0/1 | Ready (invoice exists) | - |
 
 ---
 *Roadmap created: 2026-02-14*
