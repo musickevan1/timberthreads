@@ -82,10 +82,11 @@ Plans:
   3. Gallery images use responsive sizing via Cloudinary transforms (different sizes per breakpoint)
   4. No unused packages in production bundle (dead code eliminated)
   5. All images and videos are fully optimized with appropriate compression and formats
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: TBD
+- [ ] 04-01-PLAN.md — Enable Next.js image optimization and implement responsive sizing
+- [ ] 04-02-PLAN.md — Bundle cleanup and performance verification
 
 ### Phase 5: Invoice
 **Goal**: Generate professional PDF invoice for client with itemized charges
@@ -113,7 +114,7 @@ Note: Phase 5 (Invoice) is independent and can execute at any point.
 | 1. Infrastructure | 0/TBD | Not started | - |
 | 2. Gallery Migration | 0/TBD | Not started | - |
 | 3. Video Integration | 0/TBD | Blocked (awaiting Feb 15 shoot) | - |
-| 4. Performance Optimization | 0/TBD | Not started | - |
+| 4. Performance Optimization | 0/2 | Planned | - |
 | 5. Invoice | 0/1 | Ready (invoice exists) | - |
 
 ---
