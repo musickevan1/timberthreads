@@ -47,11 +47,11 @@ Plans:
   4. Gallery displays images with automatic format optimization (WebP/AVIF based on browser)
   5. Gallery implements lazy loading (first 6 images eager, rest lazy)
   6. No broken image links or 404 errors after migration
-**Plans**: TBD
+**Plans**: 2 plans in 2 waves
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md — Migrate gallery to Cloudinary and update display components
+- [ ] 02-02-PLAN.md — Enable admin management with Cloudinary uploads (Wave 2, depends on 02-01)
 
 ### Phase 3: Video Integration
 **Goal**: Add professionally shot promo video to homepage (hero background + dedicated section)
@@ -112,7 +112,7 @@ Note: Phase 5 (Invoice) is independent and can execute at any point.
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Infrastructure | 0/TBD | Not started | - |
-| 2. Gallery Migration | 0/TBD | Not started | - |
+| 2. Gallery Migration | 0/2 | Planned | - |
 | 3. Video Integration | 0/TBD | Blocked (awaiting Feb 15 shoot) | - |
 | 4. Performance Optimization | 0/2 | Planned | - |
 | 5. Invoice | 0/1 | Ready (invoice exists) | - |
