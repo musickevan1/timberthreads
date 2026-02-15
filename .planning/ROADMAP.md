@@ -12,7 +12,7 @@ This roadmap transforms the Timber & Threads Retreat website from a broken galle
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Infrastructure** - Fix broken gallery persistence, set up Cloudinary + Vercel KV
+- [ ] **Phase 1: Infrastructure** - Fix broken gallery persistence, set up Cloudinary + Upstash Redis
 - [ ] **Phase 2: Gallery Migration** - Migrate images to Cloudinary, update admin UI
 - [ ] **Phase 3: Video Integration** - Add hero background video + dedicated promo section (depends on Feb 15 shoot)
 - [ ] **Phase 4: Performance Optimization** - Lazy loading, Lighthouse scores, bundle optimization
@@ -28,13 +28,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. Gallery metadata persists across Vercel deployments (no data loss on redeploy)
   2. Cloudinary account configured with signed uploads (secure admin access)
   3. Next.js Image component enabled and configured for Cloudinary (images.unoptimized: false)
-  4. Vercel KV database operational and accessible from API routes
-  5. Admin can upload test image to Cloudinary and retrieve metadata from Vercel KV
+  4. Upstash Redis database operational and accessible from API routes
+  5. Admin can upload test image to Cloudinary and retrieve metadata from Upstash Redis
 **Plans**: TBD
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md — Set up Upstash Redis and migrate gallery metadata from file system (Wave 1)
+- [ ] 01-02-PLAN.md — Configure Cloudinary SDK with signed upload security (Wave 1, parallel to 01-01)
+- [ ] 01-03-PLAN.md — Migrate gallery uploads to Cloudinary and enable Next.js Image optimization (Wave 2, depends on 01-01 + 01-02)
 
 ### Phase 2: Gallery Migration
 **Goal**: Migrate existing gallery to Cloudinary with full admin functionality working in production
