@@ -12,7 +12,7 @@ This roadmap transforms the Timber & Threads Retreat website from a broken galle
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Infrastructure** - Fix broken gallery persistence, set up Cloudinary + Upstash Redis
+- [ ] **Phase 1: Infrastructure** - Fix broken gallery persistence, set up Cloudinary + Vercel KV
 - [ ] **Phase 2: Gallery Migration** - Migrate images to Cloudinary, update admin UI
 - [ ] **Phase 3: Video Integration** - Add hero background video + dedicated promo section (depends on Feb 15 shoot)
 - [ ] **Phase 4: Performance Optimization** - Lazy loading, Lighthouse scores, bundle optimization
@@ -28,14 +28,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. Gallery metadata persists across Vercel deployments (no data loss on redeploy)
   2. Cloudinary account configured with signed uploads (secure admin access)
   3. Next.js Image component enabled and configured for Cloudinary (images.unoptimized: false)
-  4. Upstash Redis database operational and accessible from API routes
-  5. Admin can upload test image to Cloudinary and retrieve metadata from Upstash Redis
+  4. Vercel KV database operational and accessible from API routes
+  5. Admin can upload test image to Cloudinary and retrieve metadata from Vercel KV
 **Plans**: TBD
 
 Plans:
-- [ ] 01-01-PLAN.md — Set up Upstash Redis and migrate gallery metadata from file system (Wave 1)
-- [ ] 01-02-PLAN.md — Configure Cloudinary SDK with signed upload security (Wave 1, parallel to 01-01)
-- [ ] 01-03-PLAN.md — Migrate gallery uploads to Cloudinary and enable Next.js Image optimization (Wave 2, depends on 01-01 + 01-02)
+- [ ] 01-01: TBD
+- [ ] 01-02: TBD
 
 ### Phase 2: Gallery Migration
 **Goal**: Migrate existing gallery to Cloudinary with full admin functionality working in production
@@ -48,11 +47,11 @@ Plans:
   4. Gallery displays images with automatic format optimization (WebP/AVIF based on browser)
   5. Gallery implements lazy loading (first 6 images eager, rest lazy)
   6. No broken image links or 404 errors after migration
-**Plans**: 2 plans in 2 waves
+**Plans**: TBD
 
 Plans:
-- [ ] 02-01-PLAN.md — Migrate gallery to Cloudinary and update display components
-- [ ] 02-02-PLAN.md — Enable admin management with Cloudinary uploads (Wave 2, depends on 02-01)
+- [ ] 02-01: TBD
+- [ ] 02-02: TBD
 
 ### Phase 3: Video Integration
 **Goal**: Add professionally shot promo video to homepage (hero background + dedicated section)
@@ -66,12 +65,12 @@ Plans:
   5. Video files are compressed to under 10MB total across all versions
   6. Videos automatically disable on slow connections (3G) showing poster image instead
   7. Videos work on both desktop and mobile (iOS Safari, Android Chrome)
-**Plans**: TBD
+**Plans**: 3 plans in 2 waves
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
-- [ ] 03-03: TBD
+- [ ] 03-01-PLAN.md — Compress video files and extract poster images (Wave 1, human action checkpoint)
+- [ ] 03-02-PLAN.md — Update Hero component with video background and connection detection (Wave 2, depends on 03-01)
+- [ ] 03-03-PLAN.md — Create VideoSection and verify integration (Wave 2, depends on 03-01)
 
 ### Phase 4: Performance Optimization
 **Goal**: Optimize site performance for rural Missouri audience with mobile-first delivery
@@ -83,11 +82,10 @@ Plans:
   3. Gallery images use responsive sizing via Cloudinary transforms (different sizes per breakpoint)
   4. No unused packages in production bundle (dead code eliminated)
   5. All images and videos are fully optimized with appropriate compression and formats
-**Plans**: 2 plans
+**Plans**: TBD
 
 Plans:
-- [ ] 04-01-PLAN.md — Enable Next.js image optimization and implement responsive sizing
-- [ ] 04-02-PLAN.md — Bundle cleanup and performance verification
+- [ ] 04-01: TBD
 
 ### Phase 5: Invoice
 **Goal**: Generate professional PDF invoice for client with itemized charges
@@ -98,10 +96,10 @@ Plans:
   2. Invoice includes Evan Musick as provider and Timber & Threads Retreat contact info as client
   3. Invoice total is in the $400-600 range
   4. Invoice format is professional and ready to send
-**Plans**: 1 plan
+**Plans**: TBD
 
 Plans:
-- [ ] 05-01-PLAN.md — Verify invoice completeness and readiness for client delivery
+- [ ] 05-01: TBD
 
 ## Progress
 
@@ -113,10 +111,10 @@ Note: Phase 5 (Invoice) is independent and can execute at any point.
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Infrastructure | 0/TBD | Not started | - |
-| 2. Gallery Migration | 0/2 | Planned | - |
-| 3. Video Integration | 0/TBD | Blocked (awaiting Feb 15 shoot) | - |
-| 4. Performance Optimization | 0/2 | Planned | - |
-| 5. Invoice | 0/1 | Ready (invoice exists) | - |
+| 2. Gallery Migration | 0/TBD | Not started | - |
+| 3. Video Integration | 0/3 | Planned | - |
+| 4. Performance Optimization | 0/TBD | Not started | - |
+| 5. Invoice | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-14*
