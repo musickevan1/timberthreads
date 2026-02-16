@@ -45,6 +45,39 @@
 - [ ] **INV-02**: Invoice includes Evan Musick as provider and Timber & Threads as client
 - [ ] **INV-03**: Invoice total is in the $400-600 range
 
+## v1.1 Requirements — Promo Video Edit
+
+Requirements for processing raw shoot footage into web-ready deliverables.
+
+### Video Processing
+
+- [ ] **PROC-01**: All raw clips are cataloged with thumbnails, duration, codec, and resolution metadata
+- [ ] **PROC-02**: Interior Canon clips are analyzed for silence/dead air and trimmed segments exported
+- [ ] **PROC-03**: Reusable FFmpeg compression scripts exist for hero (720p, <5MB) and promo (1080p, <10MB) with correct web flags
+- [ ] **PROC-04**: Corrupt DJI_0018.MP4 is identified and skipped gracefully in all batch operations
+
+### Hero Background Video
+
+- [ ] **HERO-01**: A single hero background video loop (15-30s) is compressed to <5MB, 720p, H.264, muted
+- [ ] **HERO-02**: Hero video has `-movflags +faststart` and `-pix_fmt yuv420p` for universal browser playback
+- [ ] **HERO-03**: A poster frame is extracted from the hero video as a static fallback image
+- [ ] **HERO-04**: 2-3 hero loop candidates are prepared for client selection before final choice
+
+### Full Promo Video
+
+- [ ] **PROMO-01**: A 1-2 minute promo video is assembled with drone + interior footage, music, and ambient audio
+- [ ] **PROMO-02**: Promo video is compressed to <10MB, 1080p, H.264 with AAC audio
+- [ ] **PROMO-03**: Promo video has `-movflags +faststart` and `-pix_fmt yuv420p` for universal playback
+- [ ] **PROMO-04**: A poster frame is extracted from the promo video as a preview image
+- [ ] **PROMO-05**: Additional quality levels (480p, 720p) are generated for slow-connection fallback
+
+### Creative Editing
+
+- [ ] **EDIT-01**: All footage is color graded with warm tones in DaVinci Resolve
+- [ ] **EDIT-02**: Music track (acoustic/gentle piano) is synced with visual pacing
+- [ ] **EDIT-03**: Master exports are ProRes or DNxHR (not H.264) to avoid double compression
+- [ ] **EDIT-04**: Timeline versions (v1, v2, FINAL) are maintained for iteration
+
 ## v2 Requirements
 
 ### Enhancements
@@ -105,11 +138,16 @@
 | INV-02 | Phase 5 | Pending |
 | INV-03 | Phase 5 | Pending |
 
-**Coverage:**
+**v1 Coverage:**
 - v1 requirements: 25 total
 - Mapped to phases: 25
 - Unmapped: 0
 
+**v1.1 Coverage:**
+- v1.1 requirements: 17 total
+- Mapped to phases: 0 (pending roadmap)
+- Unmapped: 17 ⚠️
+
 ---
 *Requirements defined: 2026-02-14*
-*Last updated: 2026-02-14 after initial definition*
+*Last updated: 2026-02-16 after milestone v1.1 requirements defined*
