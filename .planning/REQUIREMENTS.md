@@ -110,6 +110,8 @@ Requirements for processing raw shoot footage into web-ready deliverables.
 
 ## Traceability
 
+### v1.0 (Website Update)
+
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | INFRA-01 | Phase 1 | Pending |
@@ -138,16 +140,38 @@ Requirements for processing raw shoot footage into web-ready deliverables.
 | INV-02 | Phase 5 | Pending |
 | INV-03 | Phase 5 | Pending |
 
-**v1 Coverage:**
+**v1.0 Coverage:**
 - v1 requirements: 25 total
 - Mapped to phases: 25
 - Unmapped: 0
 
+### v1.1 (Promo Video Edit)
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| PROC-01 | Phase 6 | Pending |
+| PROC-02 | Phase 6 | Pending |
+| PROC-03 | Phase 6 | Pending |
+| PROC-04 | Phase 6 | Pending |
+| EDIT-01 | Phase 7 | Pending |
+| EDIT-02 | Phase 7 | Pending |
+| EDIT-03 | Phase 7 | Pending |
+| EDIT-04 | Phase 7 | Pending |
+| HERO-04 | Phase 7 | Pending |
+| HERO-01 | Phase 8 | Pending |
+| HERO-02 | Phase 8 | Pending |
+| HERO-03 | Phase 8 | Pending |
+| PROMO-01 | Phase 8 | Pending |
+| PROMO-02 | Phase 8 | Pending |
+| PROMO-03 | Phase 8 | Pending |
+| PROMO-04 | Phase 8 | Pending |
+| PROMO-05 | Phase 8 | Pending |
+
 **v1.1 Coverage:**
 - v1.1 requirements: 17 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 17 ⚠️
+- Mapped to phases: 17
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-14*
-*Last updated: 2026-02-16 after milestone v1.1 requirements defined*
+*Last updated: 2026-02-16 (v1.1 traceability added)*

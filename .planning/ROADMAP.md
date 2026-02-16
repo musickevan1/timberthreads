@@ -12,11 +12,17 @@ This roadmap transforms the Timber & Threads Retreat website from a broken galle
 
 Decimal phases appear between their surrounding integers in numeric order.
 
+**v1.0 (Website Update):**
 - [ ] **Phase 1: Infrastructure** - Fix broken gallery persistence, set up Cloudinary + Vercel KV
 - [ ] **Phase 2: Gallery Migration** - Migrate images to Cloudinary, update admin UI
 - [ ] **Phase 3: Video Integration** - Add hero background video + dedicated promo section (depends on Feb 15 shoot)
 - [ ] **Phase 4: Performance Optimization** - Lazy loading, Lighthouse scores, bundle optimization
 - [ ] **Phase 5: Invoice** - Generate PDF invoice for client ($400-600 range)
+
+**v1.1 (Promo Video Edit):**
+- [ ] **Phase 6: Video Processing Infrastructure** - CLI setup, cataloging, silence detection, trimming
+- [ ] **Phase 7: Creative Video Editing** - DaVinci Resolve editing with human action checkpoints
+- [ ] **Phase 8: Web Compression & Deployment** - FFmpeg final compression, poster frames, deploy to public/assets/videos/
 
 ## Phase Details
 
@@ -101,21 +107,82 @@ Plans:
 Plans:
 - [ ] 05-01: TBD
 
+### Phase 6: Video Processing Infrastructure
+**Goal**: Establish CLI video processing toolchain and preprocess raw footage into cataloged, trimmed segments ready for creative editing
+**Depends on**: Nothing (v1.1 first phase)
+**Requirements**: PROC-01, PROC-02, PROC-03, PROC-04
+**Success Criteria** (what must be TRUE):
+  1. All raw clips (drone + Canon) are cataloged with thumbnails, duration, codec, and resolution metadata visible in file browser
+  2. Corrupt DJI_0018.MP4 is identified and documented as unrecoverable, skipped gracefully in all batch operations
+  3. Canon interior clips are analyzed with silence/dead air timestamps exported to processing notes
+  4. Reusable FFmpeg compression scripts exist for hero (720p, <5MB target) and promo (1080p, <10MB target) with correct browser compatibility flags (-movflags +faststart, -pix_fmt yuv420p)
+  5. Trimmed segments are exported to processing/trimmed/ preserving DJI metadata for Resolve import
+**Plans**: TBD
+
+Plans:
+- [ ] 06-01: TBD
+
+### Phase 7: Creative Video Editing
+**Goal**: Manually assemble, color grade, and export master video files in DaVinci Resolve based on preprocessed clips from Phase 6
+**Depends on**: Phase 6 (requires cataloged, trimmed clips)
+**Requirements**: EDIT-01, EDIT-02, EDIT-03, EDIT-04, HERO-04
+**Success Criteria** (what must be TRUE):
+  1. DaVinci Resolve project exists with organized bins (Drone, Canon, Audio, Graphics)
+  2. 2-3 hero loop candidates (15-30s each) are assembled with warm color grading and seamless start/end matching tested for 3+ loop cycles
+  3. Full promo video timeline (1-2min) is assembled with drone + interior footage, music track synced to visual pacing, and ambient audio mixed
+  4. All footage is color graded with warm tones (increased oranges, reduced blues) matching peaceful/cozy aesthetic
+  5. Master exports (ProRes 422 or DNxHR HQ) are saved to exports/ directory with timeline versions maintained (v1, v2, FINAL)
+**Plans**: TBD
+
+**Note**: This phase involves MANUAL human work. Plans will include human action checkpoints where user must perform creative editing tasks in DaVinci Resolve. Claude Code prepares inputs and processes outputs, but cannot perform creative decisions.
+
+Plans:
+- [ ] 07-01: TBD
+
+### Phase 8: Web Compression & Deployment
+**Goal**: Compress master exports into web-optimized deliverables and deploy to website public directory
+**Depends on**: Phase 7 (requires master exports)
+**Requirements**: HERO-01, HERO-02, HERO-03, PROMO-01, PROMO-02, PROMO-03, PROMO-04, PROMO-05
+**Success Criteria** (what must be TRUE):
+  1. Selected hero video is compressed to <5MB, 720p H.264, muted (-an flag), with -movflags +faststart and -pix_fmt yuv420p for universal browser playback
+  2. Hero video poster frame is extracted as static fallback image (1280x720, high-quality JPEG)
+  3. Full promo video is compressed to <10MB, 1080p H.264 with AAC 128kbps audio, -movflags +faststart, -pix_fmt yuv420p
+  4. Promo video poster frame is extracted as preview image (1920x1080, high-quality JPEG)
+  5. Additional quality levels (480p, 720p) are generated for slow-connection fallback with appropriate bitrate targeting
+  6. All compressed videos and poster frames are deployed to public/assets/videos/ and verified playable in Safari/iOS and Chrome/Android
+**Plans**: TBD
+
+Plans:
+- [ ] 08-01: TBD
+
 ## Progress
 
 **Execution Order:**
+
+**v1.0 (Website Update):**
 Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 Note: Phase 5 (Invoice) is independent and can execute at any point.
 
+**v1.1 (Promo Video Edit):**
+Phases execute in numeric order: 6 → 7 → 8
+
+Phase 6 must complete before Phase 7 (creative editing needs cataloged clips).
+Phase 7 must complete before Phase 8 (web compression needs master exports).
+
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
+| **v1.0 (Website Update)** | | | |
 | 1. Infrastructure | 0/TBD | Not started | - |
 | 2. Gallery Migration | 0/TBD | Not started | - |
 | 3. Video Integration | 0/3 | Planned | - |
 | 4. Performance Optimization | 0/TBD | Not started | - |
 | 5. Invoice | 0/TBD | Not started | - |
+| **v1.1 (Promo Video Edit)** | | | |
+| 6. Video Processing Infrastructure | 0/TBD | Not started | - |
+| 7. Creative Video Editing | 0/TBD | Not started | - |
+| 8. Web Compression & Deployment | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-14*
-*Last updated: 2026-02-14*
+*Last updated: 2026-02-16 (v1.1 phases added)*
