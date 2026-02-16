@@ -12,31 +12,32 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 Milestone: v1.1 (Promo Video Edit)
 Phase: 1 of 8 (Infrastructure)
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Complete
-Last activity: 2026-02-16 — Completed 01-02 (Redis Metadata Persistence)
+Last activity: 2026-02-16 — Completed 01-03 (Cloudinary CDN Integration)
 
 Progress: [██░░░░░░░░] 20% (v1.1 milestone - estimated)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 5.0 min
-- Total execution time: 0.3 hours
+- Total plans completed: 5
+- Average duration: 4.5 min
+- Total execution time: 0.4 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-infrastructure | 2 | 6.4min | 3.2min |
+| 01-infrastructure | 3 | 9.3min | 3.1min |
 | 06-video-processing-infrastructure | 2 | 12.4min | 6.2min |
 
 **Recent Trend:**
-- Last 5 plans: 06-01 (7.4min), 06-02 (5.0min), 01-01 (2.8min), 01-02 (3.6min)
-- Trend: Phase 01 progressing - image optimization and Redis persistence complete
+- Last 5 plans: 06-02 (5.0min), 01-01 (2.8min), 01-02 (3.6min), 01-03 (2.9min)
+- Trend: Phase 01 complete! Infrastructure ready for production deployment
 
 *Updated after each plan completion*
+| Phase 01-infrastructure P03 | 2.9 | 5 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -60,6 +61,9 @@ Recent decisions affecting current work:
 - **v1.1 Phase Structure**: 3-phase approach (CLI preprocessing → Creative editing → Web compression) matches industry best practices and separates automation from human creativity
 - **FFmpeg + DaVinci Resolve + auto-editor**: Free, battle-tested stack used by Netflix, YouTube, professional editors
 - **Master export → Web compression**: DaVinci Resolve exports ProRes/DNxHR, FFmpeg compresses once to avoid double compression artifacts
+- [Phase 01-03]: Cloudinary CDN for image storage: Gallery uploads now go to Cloudinary instead of local filesystem, fixing Vercel's read-only limitation
+- [Phase 01-03]: Hybrid storage during migration: New uploads use Cloudinary public_id, existing images remain local until Phase 2 migration
+- [Phase 01-03]: Tightened security: Replaced wildcard hostname with specific domain whitelist (Cloudinary, Facebook, Google) in Next.js remotePatterns
 
 ### Pending Todos
 
@@ -68,10 +72,16 @@ None yet.
 ### Blockers/Concerns
 
 **Phase 1:**
+- ✅ RESOLVED: Phase 01 infrastructure complete - all 3 plans executed successfully
 - USER SETUP REQUIRED: Upstash Redis credentials needed for production deployment
   - Add integration via Vercel Dashboard → Storage → Upstash Redis
   - Copy UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN to env vars
   - Run `vercel env pull .env.local` for local development
+- USER SETUP REQUIRED: Cloudinary credentials needed for production deployment
+  - Sign up at https://cloudinary.com (use timber+cloudinary@evanmusick.dev)
+  - Get NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+  - Create upload preset: timber-threads-gallery (Signed, folder: timber-threads/gallery)
+  - Add to Vercel environment variables (Production, Preview, Development)
 
 **Phase 6:**
 - ✅ RESOLVED: DJI_0018.MP4 documented as corrupt - will skip in all processing, use DJI_0018.MP4_fixed.MP4 instead
@@ -87,10 +97,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-16 20:36
-Stopped at: Completed 01-02-PLAN.md (Redis Metadata Persistence)
+Last session: 2026-02-16 20:42
+Stopped at: Completed 01-03-PLAN.md (Cloudinary CDN Integration)
 Resume file: None
-Next action: Continue Phase 01 infrastructure - Plan 03 (Cloudinary image migration), or resume Phase 7 creative editing
+Next action: Phase 01 infrastructure complete! Move to Phase 2 (Gallery Migration) or resume Phase 7 creative editing
 
 ---
 *Created: 2026-02-14*
