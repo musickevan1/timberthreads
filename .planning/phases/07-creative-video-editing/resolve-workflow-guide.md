@@ -2,7 +2,7 @@
 
 **Phase 7 Plan 01 - Hero Loop Creation**
 
-This guide accompanies Phase 7 creative editing work. Follow sections in order for creating hero loop candidates in DaVinci Resolve. Duration placeholder [HERO_DURATION] will be filled after Task 2 decision.
+This guide accompanies Phase 7 creative editing work. Follow sections in order for creating hero loop candidates in DaVinci Resolve. Target hero loop duration: **10-15 seconds** (confirmed in Task 2).
 
 ---
 
@@ -83,10 +83,10 @@ This guide accompanies Phase 7 creative editing work. Follow sections in order f
 
 | Clip | Duration | Notes |
 |------|----------|-------|
-| DJI_0014.MP4 | 154.0s | Scrub for best [HERO_DURATION]s segment |
-| DJI_0015.MP4 | 133.9s | Scrub for best [HERO_DURATION]s segment |
-| DJI_0016.MP4 | 110.9s | Scrub for best [HERO_DURATION]s segment |
-| DJI_0017.MP4 | 157.7s | Scrub for best [HERO_DURATION]s segment |
+| DJI_0014.MP4 | 154.0s | Scrub for best 10-15s segment |
+| DJI_0015.MP4 | 133.9s | Scrub for best 10-15s segment |
+| DJI_0016.MP4 | 110.9s | Scrub for best 10-15s segment |
+| DJI_0017.MP4 | 157.7s | Scrub for best 10-15s segment |
 | DJI_0018.MP4_fixed.MP4 | 349.8s | Longest — most segment options |
 
 **Recommendation:** Preview each clip, identify segments with smooth consistent motion. Look for:
@@ -103,9 +103,9 @@ This guide accompanies Phase 7 creative editing work. Follow sections in order f
    - Use Project Settings (1920x1080, 30fps) - click Use Project Settings button
    - Click Create
 5. Drag selected drone clip from Drone bin onto timeline
-6. Scrub through clip to find best [HERO_DURATION]s segment for looping
+6. Scrub through clip to find best 10-15s segment for looping
 7. Set In point (I key) at start of desired segment
-8. Set Out point (O key) at end of segment (approximately [HERO_DURATION] seconds later)
+8. Set Out point (O key) at end of segment (approximately 10-15 seconds later)
 9. Trim timeline to In/Out points
 
 ### 3.3 Test Loop Seamlessness
@@ -273,7 +273,7 @@ processing/exports/hero/
 └── Hero_v3_master.mov    (optional - ProRes 422, 1920x1080, 30fps, no audio)
 ```
 
-**File sizes:** 300-500MB per [HERO_DURATION]s hero loop (normal for ProRes masters)
+**File sizes:** 300-500MB per 10-15s hero loop (normal for ProRes masters)
 
 ---
 
