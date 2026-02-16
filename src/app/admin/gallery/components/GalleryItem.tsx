@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import { CldImage } from 'next-cloudinary';
 import { ImageAsset } from '@/app/api/gallery/types';
 import { Tab } from './types';
 
@@ -76,6 +77,7 @@ const GalleryItem: React.FC<GalleryItemProps> = ({
     : image.caption;
 
   const isReorderingEnabled = activeTab !== 'deleted' && handleMoveUp && handleMoveDown;
+  const isLocal = image.src.startsWith('/');
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm border border-stone-200 transition-all duration-200 h-full">
@@ -135,15 +137,25 @@ const GalleryItem: React.FC<GalleryItemProps> = ({
           </div>
         )}
 
-        <Image
-          src={image.src}
-          alt={image.alt}
-          fill
-          priority
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          quality={85}
-        />
+        {isLocal ? (
+          <Image
+            src={image.src}
+            alt={image.alt}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        ) : (
+          <CldImage
+            src={image.src}
+            alt={image.alt}
+            fill
+            crop="fill"
+            gravity="auto"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        )}
 
         {activeTab !== 'deleted' && (
           <div className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md">

@@ -24,6 +24,46 @@ export async function GET() {
 // POST /api/gallery
 export async function POST(request: NextRequest) {
   try {
+    const contentType = request.headers.get('content-type') || '';
+
+    // CldUploadWidget flow: image already on Cloudinary
+    if (contentType.includes('application/json')) {
+      const { src, alt, caption, section, width, height } = await request.json();
+
+      if (!src || !section) {
+        return NextResponse.json(
+          { error: 'src and section are required' },
+          { status: 400 }
+        );
+      }
+
+      const db = await getGalleryData();
+      const maxOrder = db.images
+        .filter(img => img.section === section)
+        .reduce((max, img) => Math.max(max, img.order || 0), 0);
+
+      const newImage: ImageAsset = {
+        src,
+        alt: alt || src.split('/').pop() || 'Gallery image',
+        caption: caption || '',
+        section,
+        order: maxOrder + 1,
+        metadata: {
+          uploadedAt: new Date().toISOString(),
+          dimensions: width && height ? { width, height } : undefined,
+        },
+      };
+
+      db.images.push(newImage);
+      await saveGalleryData(db);
+
+      return NextResponse.json({
+        message: 'Image added successfully',
+        image: newImage,
+      });
+    }
+
+    // Existing FormData flow (backward compatibility)
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const caption = formData.get('caption') as string;

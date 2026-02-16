@@ -13,6 +13,9 @@ import UploadSection from './components/UploadSection';
 import LoadingState from './components/LoadingState';
 import GalleryGrid from './components/GalleryGrid';
 
+// Force dynamic rendering (admin page requires authentication + Cloudinary)
+export const dynamic = 'force-dynamic';
+
 // Map admin tabs to image sections
 const getImageSection = (tab: Tab): ImageAsset['section'] => {
   switch (tab) {
@@ -29,9 +32,6 @@ export default function GalleryAdmin() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>('Facility');
   const [galleryData, setGalleryData] = useState<GalleryState>({ images: [], deletedImages: [] });
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadError, setUploadError] = useState('');
   const [selectedImage, setSelectedImage] = useState<ImageAsset | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [actionInProgress, setActionInProgress] = useState(false);
@@ -70,78 +70,6 @@ export default function GalleryAdmin() {
     }
   };
 
-  const handleImageUpload = async (fileInput: React.ChangeEvent<HTMLInputElement> | File) => {
-    let file: File;
-    
-    if (fileInput instanceof File) {
-      file = fileInput;
-    } else {
-      const files = fileInput.target.files;
-      if (!files || files.length === 0) return;
-      file = files[0];
-    }
-    
-    const MAX_FILE_SIZE = 10 * 1024 * 1024;
-    if (file.size > MAX_FILE_SIZE) {
-      setUploadError(`File size exceeds 10MB limit (${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
-      return;
-    }
-    
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    if (!validTypes.includes(file.type)) {
-      setUploadError('Only JPG, PNG, GIF, and WebP images are supported');
-      return;
-    }
-    
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    let caption = file.name.split('.')[0]
-      .replace(/-/g, ' ')
-      .replace(/_/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-    
-    caption = caption.split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
-      
-    formData.append('caption', caption);
-    formData.append('section', getImageSection(activeTab));
-
-    setIsUploading(true);
-    setUploadProgress(0);
-    setUploadError('');
-
-    try {
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => prev < 90 ? prev + Math.floor(Math.random() * 5) + 1 : prev);
-      }, 300);
-
-      const response = await fetch('/api/gallery', {
-        method: 'POST',
-        body: formData,
-      });
-
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to upload image');
-      }
-      
-      await fetchGalleryData();
-    } catch (error: any) {
-      console.error('Upload error:', error);
-      setUploadError(error.message || 'Failed to upload image. Please try again.');
-    } finally {
-      setTimeout(() => {
-        setIsUploading(false);
-        setUploadProgress(0);
-      }, 500);
-    }
-  };
 
   const handleSoftDelete = async (image: ImageAsset) => {
     try {
@@ -313,14 +241,12 @@ export default function GalleryAdmin() {
           actionInProgress={actionInProgress}
         />
 
-        <UploadSection 
+        <UploadSection
           activeTab={activeTab}
           filteredImages={filteredImages}
-          isUploading={isUploading}
-          uploadProgress={uploadProgress}
-          uploadError={uploadError}
           actionInProgress={actionInProgress}
-          handleImageUpload={(e: any) => handleImageUpload(e)}
+          section={getImageSection(activeTab)}
+          onUploadSuccess={() => fetchGalleryData()}
         />
 
         {isLoading ? (

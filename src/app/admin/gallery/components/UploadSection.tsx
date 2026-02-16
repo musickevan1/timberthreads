@@ -1,47 +1,31 @@
-import React, { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
+import type { CloudinaryUploadWidgetResults } from 'next-cloudinary';
 import { Tab } from './types';
 import { ImageAsset } from '@/app/api/gallery/types';
+
+// Dynamically import CldUploadWidget to avoid SSR/build-time issues
+const CldUploadWidget = dynamic(
+  () => import('next-cloudinary').then(mod => mod.CldUploadWidget),
+  { ssr: false }
+);
 
 interface UploadSectionProps {
   activeTab: Tab;
   filteredImages: ImageAsset[];
-  isUploading: boolean;
-  uploadProgress: number;
-  uploadError: string;
   actionInProgress: boolean;
-  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement> | File) => Promise<void> | void;
+  section: 'Facility' | 'Quilting';
+  onUploadSuccess: () => void;
 }
 
 const UploadSection: React.FC<UploadSectionProps> = ({
   activeTab,
   filteredImages,
-  isUploading,
-  uploadProgress,
-  uploadError,
   actionInProgress,
-  handleImageUpload
+  section,
+  onUploadSuccess
 }) => {
-  const [isDragActive, setIsDragActive] = useState(false);
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      handleImageUpload(acceptedFiles[0]);
-    }
-  }, [handleImageUpload]);
-
-  const { getRootProps, getInputProps, isDragReject } = useDropzone({
-    onDrop,
-    accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp']
-    },
-    disabled: isUploading || actionInProgress,
-    maxFiles: 1,
-    onDragEnter: () => setIsDragActive(true),
-    onDragLeave: () => setIsDragActive(false),
-    onDropAccepted: () => setIsDragActive(false),
-    onDropRejected: () => setIsDragActive(false)
-  });
+  const [uploadError, setUploadError] = useState('');
 
   if (activeTab === 'deleted') {
     return null;
@@ -55,76 +39,88 @@ const UploadSection: React.FC<UploadSectionProps> = ({
           {filteredImages.length} images in this section
         </div>
       </div>
-      
-      <div 
-        {...getRootProps()} 
-        className={`bg-stone-50 p-6 rounded-lg border-2 border-dashed transition-colors duration-200 ${
-          isDragActive ? 'border-teal-500 bg-teal-50' : 
-          isDragReject ? 'border-red-500 bg-red-50' : 
-          'border-stone-200'
-        } ${isUploading || actionInProgress ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+
+      <CldUploadWidget
+        signatureEndpoint="/api/cloudinary-signature"
+        options={{
+          folder: 'timber-threads/gallery',
+          tags: [section.toLowerCase(), 'gallery'],
+          maxFiles: 1,
+          sources: ['local', 'url'],
+          multiple: false,
+          resourceType: 'image',
+          clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+          maxFileSize: 10000000,
+        }}
+        onSuccess={async (result: CloudinaryUploadWidgetResults) => {
+          if (result.info && typeof result.info !== 'string') {
+            const { public_id, width, height } = result.info;
+
+            try {
+              const response = await fetch('/api/gallery', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  src: public_id,
+                  alt: public_id.split('/').pop() || 'Gallery image',
+                  caption: (public_id.split('/').pop() || 'Image')
+                    .replace(/-/g, ' ')
+                    .replace(/_/g, ' ')
+                    .split(' ')
+                    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+                    .join(' '),
+                  section,
+                  width,
+                  height,
+                }),
+              });
+
+              if (!response.ok) throw new Error('Failed to save image metadata');
+              setUploadError('');
+              onUploadSuccess();
+            } catch (error) {
+              console.error('Error saving upload metadata:', error);
+              setUploadError('Upload succeeded but failed to save metadata. Please refresh the page.');
+            }
+          }
+        }}
       >
-        <input {...getInputProps()} />
-        
-        <div className="flex flex-col items-center justify-center py-6 text-center">
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            className={`h-12 w-12 mb-4 ${
-              isDragActive ? 'text-teal-500' : 
-              isDragReject ? 'text-red-500' : 
-              'text-stone-400'
-            }`} 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            stroke="currentColor"
+        {({ open }) => (
+          <div
+            className="bg-stone-50 p-6 rounded-lg border-2 border-dashed border-stone-200 cursor-pointer hover:border-teal-500 hover:bg-teal-50 transition-colors"
+            onClick={() => !actionInProgress && open()}
           >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={1.5} 
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" 
-            />
-          </svg>
-          
-          {isDragActive ? (
-            <p className="text-lg font-medium text-teal-600">Drop the image here...</p>
-          ) : isDragReject ? (
-            <p className="text-lg font-medium text-red-600">Only image files are accepted</p>
-          ) : (
-            <>
-              <p className="text-lg font-medium text-stone-700">
-                Drag & drop an image here, or click to select
-              </p>
+            <div className="flex flex-col items-center justify-center py-6 text-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-12 w-12 mb-4 text-stone-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
+              </svg>
+              <p className="text-lg font-medium text-stone-700">Click to upload an image</p>
               <p className="mt-2 text-sm text-stone-500">
                 Supports JPG, PNG, GIF, and WebP up to 10MB
               </p>
-            </>
-          )}
-          
-          {!isDragActive && !isDragReject && (
-            <button
-              type="button"
-              className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-300 disabled:cursor-not-allowed"
-              disabled={isUploading || actionInProgress}
-            >
-              {isUploading ? 'Uploading...' : 'Select Image'}
-            </button>
-          )}
-        </div>
-        
-        {isUploading && (
-          <div className="mt-6">
-            <div className="w-full bg-stone-200 rounded-full h-2.5">
-              <div 
-                className="bg-teal-600 h-2.5 rounded-full transition-all duration-300" 
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
+              <button
+                type="button"
+                className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-300 disabled:cursor-not-allowed"
+                disabled={actionInProgress}
+              >
+                Select Image
+              </button>
             </div>
-            <p className="text-sm text-stone-600 mt-2 text-center">Uploading: {uploadProgress}%</p>
           </div>
         )}
-      </div>
-      
+      </CldUploadWidget>
+
       {uploadError && (
         <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-md text-sm">
           <div className="flex">
@@ -135,8 +131,6 @@ const UploadSection: React.FC<UploadSectionProps> = ({
           </div>
         </div>
       )}
-      
-      {/* Tip removed as requested */}
     </div>
   );
 };
