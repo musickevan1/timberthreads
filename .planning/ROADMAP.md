@@ -133,12 +133,13 @@ Plans:
   3. Full promo video timeline (1-2min) is assembled with drone + interior footage, music track synced to visual pacing, and ambient audio mixed
   4. All footage is color graded with warm tones (increased oranges, reduced blues) matching peaceful/cozy aesthetic
   5. Master exports (ProRes 422 or DNxHR HQ) are saved to exports/ directory with timeline versions maintained (v1, v2, FINAL)
-**Plans**: TBD
+**Plans**: 2 plans in 2 waves
 
-**Note**: This phase involves MANUAL human work. Plans will include human action checkpoints where user must perform creative editing tasks in DaVinci Resolve. Claude Code prepares inputs and processes outputs, but cannot perform creative decisions.
+**Note**: This phase involves MANUAL human work. Plans include human action checkpoints where user must perform creative editing tasks in DaVinci Resolve. Claude Code prepares inputs and processes outputs, but cannot perform creative decisions.
 
 Plans:
-- [ ] 07-01: TBD
+- [ ] 07-01-PLAN.md — Project setup, hero loop duration decision, and hero loop candidates in DaVinci Resolve (Wave 1, checkpoints)
+- [ ] 07-02-PLAN.md — Promo video assembly with music and master export validation (Wave 2, depends on 07-01)
 
 ### Phase 8: Web Compression & Deployment
 **Goal**: Compress master exports into web-optimized deliverables and deploy to website public directory
@@ -181,7 +182,7 @@ Phase 7 must complete before Phase 8 (web compression needs master exports).
 | 5. Invoice | 0/TBD | Not started | - |
 | **v1.1 (Promo Video Edit)** | | | |
 | 6. Video Processing Infrastructure | 2/2 | ✓ Complete | 2026-02-16 |
-| 7. Creative Video Editing | 0/TBD | Not started | - |
+| 7. Creative Video Editing | 0/2 | Planned | - |
 | 8. Web Compression & Deployment | 0/TBD | Not started | - |
 
 ---
