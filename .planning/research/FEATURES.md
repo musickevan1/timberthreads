@@ -1,8 +1,8 @@
 # Feature Research
 
-**Domain:** Retreat Center Website - Video Integration & Gallery Management
-**Researched:** 2026-02-14
-**Confidence:** MEDIUM
+**Domain:** Web Video Processing Pipeline (Raw Footage to Web-Ready Deliverables)
+**Researched:** 2026-02-16
+**Confidence:** HIGH
 
 ## Feature Landscape
 
@@ -12,30 +12,29 @@ Features users assume exist. Missing these = product feels incomplete.
 
 | Feature | Why Expected | Complexity | Notes |
 |---------|--------------|------------|-------|
-| Mobile-optimized gallery | 60%+ traffic from mobile; users browse on phones | LOW | Cloudinary auto-handles responsive breakpoints with `w_auto`, `dpr_auto` |
-| Lazy-loaded images | Expected on modern sites; saves data on rural connections | LOW | Browser-native `loading="lazy"` + Cloudinary optimization |
-| Gallery categories/organization | Users need to find room photos, common areas, views separately | LOW | Simple filter/tab UI over categorized images |
-| High-quality room/facility photos | Standard hospitality expectation; decision driver | LOW | Already have content; Cloudinary delivers optimized versions |
-| Fast page load (< 3s) | Rural MO may have slower connections; mobile data concerns | MEDIUM | Requires video optimization, lazy loading, CDN (Cloudinary provides) |
-| Muted autoplay hero video | Industry standard for hospitality sites in 2026 | MEDIUM | Audio must be muted; provide unmute control; accessibility required |
-| Video fallback image | Hero video needs static placeholder for slow connections | LOW | First frame or designed poster image |
-| Alt text on all images | Accessibility requirement; also helps SEO | LOW | Add during Cloudinary migration |
-| Contact information visible | Users expect phone/email without hunting | LOW | Already exists in current site |
+| **Video Compression** | Web delivery requires smaller file sizes than raw footage | LOW | FFmpeg H.264 with CRF 23 is industry standard. For your 720p hero (<5MB) and 1080p promo (<10MB), this is straightforward. |
+| **Format Conversion** | Raw drone/camera formats need conversion to web-compatible MP4 | LOW | DJI Mavic Air outputs MOV/MP4, Canon outputs MP4. Both need re-encoding with web-optimized settings. |
+| **Resolution Scaling** | Raw 1080p footage needs downscaling for hero video (720p) and bandwidth optimization | LOW | FFmpeg scale filter. Standard operation, no complexity. |
+| **Poster Frame Extraction** | HTML5 video requires poster image (1280x720px) to avoid blank screen before playback | LOW | Extract single frame at ~3-5s mark using FFmpeg. Should be 16:9 ratio, <2MB JPG/PNG. |
+| **Trim/Cut Raw Footage** | Raw clips need trimming to usable segments before assembly | LOW | FFmpeg copy codec for lossless cutting. DaVinci Resolve for creative trimming. |
+| **Asset Cataloging** | Need to track which raw files map to which outputs | LOW | Simple manifest file (JSON/CSV) mapping source files to processed outputs. |
+| **Metadata Preservation** | Drone stabilization metadata must be preserved during compression | MEDIUM | Use FFmpeg 6.0+ with `-map_metadata 0` flag. Critical for DJI footage quality. |
+| **Quality Validation** | Verify compressed output meets size/quality requirements | LOW | Automated checks: file size <target, resolution correct, playback functional. |
 
 ### Differentiators (Competitive Advantage)
 
-Features that set the product apart. Not required, but valued.
+Features that set the product apart. Not required, but valuable.
 
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
-| Self-hosted promo video | Control over branding; no YouTube ads/suggestions; feels premium | MEDIUM | Use `next-video` package for auto-optimization; WebM + MP4 fallback |
-| Drone footage showcase | Unique island/rural location; competitors likely don't have aerial views | LOW | Content already exists; just needs hero integration |
-| Progressive image loading (blur-up) | Smooth UX; feels premium despite slower rural connections | LOW | Cloudinary supports `q_auto:low` + `e_blur` technique |
-| Gallery metadata/captions | Tell story of quilting space, crafting areas, family-friendly features | LOW | Cloudinary supports metadata; simple overlay on hover/click |
-| Pause control for hero video | Respectful of data usage; good for accessibility | LOW | Standard HTML5 video control |
-| Dedicated "Virtual Tour" section | Helps remote users visualize space without visiting | MEDIUM | Organize existing photos + promo video into guided experience |
-| Seasonal gallery updates | Show retreat in different seasons; keep content fresh | LOW | Process: just upload new images to Cloudinary categories |
-| Image zoom/lightbox | Let users see room details up close | LOW | Many lightweight libraries available |
+| **Multiple Quality Levels** | Adaptive delivery for varying connection speeds (critical for rural Missouri audience) | MEDIUM | Generate 480p, 720p, 1080p versions. Requires bitrate ladder (480p@1.5Mbps, 720p@3Mbps, 1080p@5Mbps). |
+| **WebM Fallback Format** | 20-30% smaller files for modern browsers, with MP4 fallback for Safari/iOS | MEDIUM | FFmpeg VP9/AV1 encoding. Requires serving both formats via HTML5 `<source>` elements. |
+| **Scene Detection** | Automatically identify shot boundaries in raw footage for easier cataloging | MEDIUM | FFmpeg `scdet` filter or PySceneDetect. Useful for ~14min of raw footage to find usable segments. |
+| **VMAF Quality Metrics** | Objective quality validation (Netflix standard) instead of manual review | MEDIUM | FFmpeg VMAF filter compares compressed to source. Target VMAF score 90+ for web delivery. |
+| **Thumbnail Strip Generation** | Extract keyframe thumbnails every 5-10s for visual catalog/storyboard | LOW | FFmpeg select filter on I-frames. Helpful for reviewing 14min raw footage quickly. |
+| **Automated Color Correction** | Apply LUT for consistent look across drone/Canon footage | MEDIUM | FFmpeg with LUT file. DaVinci Resolve generates LUT, FFmpeg applies during compression. |
+| **Batch Processing Pipeline** | Process all 25+ raw clips with single command | LOW | Shell script wrapping FFmpeg commands. Essential for efficiency given clip count. |
+| **Video Stabilization** | Post-process any shaky footage (though DJI has in-camera stabilization) | HIGH | DaVinci Resolve or FFmpeg vidstab plugin. Probably unnecessary given drone gimbal, but available if needed. |
 
 ### Anti-Features (Commonly Requested, Often Problematic)
 
@@ -43,285 +42,232 @@ Features that seem good but create problems.
 
 | Feature | Why Requested | Why Problematic | Alternative |
 |---------|---------------|-----------------|-------------|
-| Unmuted autoplay video | "More engaging/attention-grabbing" | Accessibility nightmare; annoying; browsers block it; rural data waste | Muted autoplay with prominent unmute button |
-| Auto-advancing gallery carousel | "Shows more content automatically" | Users lose control; accessibility issues; causes motion sickness | User-controlled navigation; auto-pause on hover |
-| Full 1080p+ video everywhere | "Looks better on big screens" | Massive file sizes; slow on mobile/rural; 720p is sufficient for web | 720p optimized with adaptive streaming |
-| Video hosted on own server | "Full control; no third-party" | Bandwidth costs; concurrent viewer limits; no CDN; slow | Self-hosted files + Cloudinary CDN, or `next-video` optimization |
-| Complex booking system integration | "Book directly on site" | Maintenance burden; payment processing complexity; scope creep | Link to existing booking system (if any) or email/phone contact |
-| Infinite scroll gallery | "Modern; no pagination" | Hard to reach footer; accessibility issues; memory leaks | Pagination or "Load More" button |
-| Background audio/music | "Creates atmosphere" | Accessibility fail; annoying; data waste; users mute anyway | No background audio; let video provide ambient sound when unmuted |
+| **HLS/DASH Adaptive Streaming** | "Industry standard for streaming" | Overkill for 15-30s hero loop and 1-2min promo. Adds complexity (chunking, manifest files, server config) for minimal benefit. | Multiple quality static files with simple `<source>` elements. Let browser choose. |
+| **Client-Side Video Upload/Processing** | "Let users upload their own videos" | Not in project scope. This milestone processes specific shoot footage, not user-generated content. | Stick to CLI processing workflow for this specific batch. |
+| **Real-Time Preview During Compression** | "See output while encoding" | Encoding is non-interactive batch process. Preview slows encoding and adds UI complexity. | Two-stage workflow: DaVinci Resolve for creative preview, FFmpeg for batch compression. |
+| **Automated Audio Normalization** | "Ensure consistent volume levels" | Hero video is muted. Promo video audio comes from DaVinci Resolve mix with music. Normalization conflicts with creative intent. | Handle audio levels in DaVinci Resolve during editing, not during compression. |
+| **4K Output** | "Future-proof with highest resolution" | Raw footage is 1080p. Upscaling doesn't add quality. Target audience on slow connections. Hero is 720p, promo is 1080p per requirements. | Output at source resolution or lower. 720p/1080p H.264 is the sweet spot. |
+| **Lossless Archival Copies** | "Keep uncompressed versions forever" | Raw footage is already archived. Lossless web formats are 10-50x larger with no perceptual benefit. | Archive raw footage separately. Web outputs are lossy H.264 optimized for delivery. |
 
 ## Feature Dependencies
 
 ```
-Gallery Migration to Cloudinary
-    └──requires──> Cloudinary account setup
-    └──enables──> Lazy loading optimization
-    └──enables──> Responsive image breakpoints
-    └──enables──> Progressive blur-up loading
+Asset Cataloging
+    ├──requires──> Trim/Cut Raw Footage (need to know what's being cataloged)
+    └──enhances──> Scene Detection (automated cataloging)
 
-Hero Background Video
-    └──requires──> Video optimization (WebM + MP4)
-    └──requires──> Fallback poster image
-    └──enables──> Pause/play controls
-    └──conflicts──> Auto-advancing carousel (motion overload)
+Video Compression
+    ├──requires──> Format Conversion (must convert before compressing)
+    ├──requires──> Resolution Scaling (scale then compress)
+    ├──requires──> Metadata Preservation (preserve during compression)
+    └──enhances──> Quality Validation (validate compressed output)
 
-Self-Hosted Promo Video Section
-    └──requires──> Video optimization (next-video or manual)
-    └──requires──> CDN distribution (Cloudinary/Vercel)
-    └──optional──> Captions/subtitles (accessibility)
+Poster Frame Extraction
+    └──requires──> Video Compression (extract from final compressed video, not raw)
 
-Performance Optimization
-    └──requires──> Lazy loading (images + video)
-    └──requires──> Format optimization (WebM, WebP)
-    └──requires──> CDN (Cloudinary provides)
-    └──enhances──> All other features
+Multiple Quality Levels
+    ├──requires──> Video Compression (compression pipeline must support multiple passes)
+    └──conflicts──> HLS/DASH Adaptive Streaming (choose one approach, not both)
+
+WebM Fallback Format
+    └──requires──> Video Compression (parallel compression pipeline)
+
+VMAF Quality Metrics
+    └──enhances──> Quality Validation (automated quality scoring)
+
+Automated Color Correction
+    ├──requires──> Trim/Cut Raw Footage (apply LUT to trimmed clips)
+    └──conflicts──> Video Stabilization (LUT first, stabilization second, or quality degrades)
+
+Batch Processing Pipeline
+    └──enhances──> ALL compression features (automates entire workflow)
 ```
 
 ### Dependency Notes
 
-- **Gallery Migration enables optimization features:** Moving to Cloudinary unlocks automatic responsive images, lazy loading, blur-up, and format optimization without manual intervention.
-- **Hero video requires optimization first:** Must optimize file size before implementing autoplay to avoid poor performance on mobile/rural connections.
-- **Performance optimization is foundational:** Lazy loading and CDN must be in place before adding more video content to avoid slow page loads.
-- **Video autoplay conflicts with other motion:** Don't combine autoplaying hero video with auto-advancing carousels or other moving elements.
+- **Poster Frame Extraction requires Video Compression:** Extract poster from final compressed output (not raw footage) to ensure poster matches delivered video quality/aspect ratio.
+- **Multiple Quality Levels conflicts with HLS/DASH:** Both solve same problem (adaptive delivery). Static multi-quality files are simpler for short-form content.
+- **Automated Color Correction conflicts with Video Stabilization:** LUT application changes pixel values. Apply LUT first, then stabilize, or stabilization quality degrades.
+- **Metadata Preservation is critical for drone footage:** DJI stabilization metadata must survive compression or video quality degrades significantly.
 
 ## MVP Definition
 
-### Launch With (v1)
+### Launch With (Phase 3: Video Integration)
 
 Minimum viable product — what's needed to validate the concept.
 
-- [x] Cloudinary gallery migration with lazy loading — Core performance improvement for existing images
-- [x] Muted hero background video (drone footage) — Primary visual differentiator; showcases location
-- [x] Self-hosted promo video section (optimized) — Tells story without YouTube branding
-- [x] Mobile-responsive gallery with categories — Table stakes; users browse on phones
-- [x] Basic performance optimization (lazy load, WebM) — Required for rural/mobile users
-- [x] Video pause controls + poster fallback — Accessibility and data-conscious
+- [x] **Video Compression** — Core requirement. Raw footage unusable at web scale.
+- [x] **Format Conversion** — Must convert to web-compatible H.264 MP4.
+- [x] **Resolution Scaling** — Hero requires 720p, promo requires 1080p.
+- [x] **Poster Frame Extraction** — HTML5 video best practice. Avoid blank screen.
+- [x] **Trim/Cut Raw Footage** — 14min raw footage needs cutting to 15-30s hero, 1-2min promo.
+- [x] **Asset Cataloging** — Track which raw clips -> which outputs.
+- [x] **Metadata Preservation** — Critical for DJI drone footage quality.
+- [x] **Quality Validation** — Automated check: size <5MB (hero), <10MB (promo), playback functional.
 
-### Add After Validation (v1.x)
+### Add After Validation (Post-Launch Optimization)
 
-Features to add once core is working.
+Features to add once core is working and traffic patterns are known.
 
-- [ ] Progressive blur-up image loading — Enhances UX but not critical for launch
-- [ ] Image zoom/lightbox functionality — Nice-to-have for detail viewing
-- [ ] Gallery captions/metadata overlay — Adds storytelling but not blocking
-- [ ] Seasonal gallery updates workflow — Can add new images anytime post-launch
-- [ ] "Virtual Tour" dedicated section — Organize existing content better
-- [ ] Video captions/subtitles — Accessibility enhancement (if promo has voiceover)
+- [ ] **Multiple Quality Levels** — Add if analytics show high mobile/slow connection traffic (likely given rural Missouri audience).
+- [ ] **WebM Fallback Format** — Add if bandwidth costs become significant or load times are slow.
+- [ ] **VMAF Quality Metrics** — Add if quality validation needs to be more objective than visual review.
+- [ ] **Batch Processing Pipeline** — Add if processing multiple video updates becomes regular workflow.
 
 ### Future Consideration (v2+)
 
 Features to defer until product-market fit is established.
 
-- [ ] Video testimonials from guests — Need to collect content first
-- [ ] 360° photo tours — High production cost; validate need first
-- [ ] Interactive map of property — Complex; may not add value for small venue
-- [ ] Integrated booking system — Scope creep; contact form is sufficient initially
-- [ ] Video analytics (watch time, engagement) — Optimization for later; focus on launch first
+- [ ] **Scene Detection** — Useful for cataloging large video libraries, but overkill for one-time shoot processing.
+- [ ] **Thumbnail Strip Generation** — Nice for visual storyboards, but not needed for simple homepage video.
+- [ ] **Automated Color Correction** — DaVinci Resolve handles this during creative editing. Automation only valuable if processing many shoots.
+- [ ] **Video Stabilization** — DJI gimbal + in-camera stabilization likely sufficient. Only needed if footage is shaky.
 
 ## Feature Prioritization Matrix
 
-| Feature | User Value | Implementation Cost | Priority |
-|---------|------------|---------------------|----------|
-| Cloudinary migration + lazy loading | HIGH | MEDIUM | P1 |
-| Hero background video (muted) | HIGH | MEDIUM | P1 |
-| Mobile-responsive gallery | HIGH | LOW | P1 |
-| Self-hosted promo video | HIGH | MEDIUM | P1 |
-| Video pause controls | MEDIUM | LOW | P1 |
-| Poster fallback image | HIGH | LOW | P1 |
-| Progressive blur-up loading | MEDIUM | LOW | P2 |
-| Image zoom/lightbox | MEDIUM | LOW | P2 |
-| Gallery metadata/captions | MEDIUM | LOW | P2 |
-| Virtual tour section | MEDIUM | MEDIUM | P2 |
-| Video captions | MEDIUM | MEDIUM | P2 |
-| Seasonal updates workflow | LOW | LOW | P2 |
-| 360° tours | LOW | HIGH | P3 |
-| Integrated booking | MEDIUM | HIGH | P3 |
-| Video analytics | LOW | MEDIUM | P3 |
+| Feature | User Value | Implementation Cost | Priority | Notes |
+|---------|------------|---------------------|----------|-------|
+| Video Compression | HIGH | LOW | P1 | Non-negotiable. Core requirement. |
+| Format Conversion | HIGH | LOW | P1 | Required for web compatibility. |
+| Resolution Scaling | HIGH | LOW | P1 | Hero 720p, promo 1080p per spec. |
+| Poster Frame Extraction | HIGH | LOW | P1 | Avoid blank screen, LCP optimization. |
+| Trim/Cut Raw Footage | HIGH | LOW | P1 | 14min raw -> 15-30s + 1-2min outputs. |
+| Asset Cataloging | MEDIUM | LOW | P1 | Essential for workflow tracking. |
+| Metadata Preservation | HIGH | MEDIUM | P1 | Critical for DJI footage quality. |
+| Quality Validation | HIGH | LOW | P1 | Ensure outputs meet size/quality requirements. |
+| Multiple Quality Levels | HIGH | MEDIUM | P2 | Valuable for rural audience, but validate need first. |
+| WebM Fallback Format | MEDIUM | MEDIUM | P2 | 20-30% savings, but add after MP4 working. |
+| VMAF Quality Metrics | LOW | MEDIUM | P2 | Nice-to-have. Manual review sufficient initially. |
+| Batch Processing Pipeline | MEDIUM | LOW | P2 | Efficiency gain, but manual processing fine for one-time shoot. |
+| Scene Detection | LOW | MEDIUM | P3 | Useful for large libraries, overkill for single shoot. |
+| Thumbnail Strip Generation | LOW | LOW | P3 | Visual convenience, not core need. |
+| Automated Color Correction | MEDIUM | MEDIUM | P3 | DaVinci Resolve handles this. Automate only if recurring. |
+| Video Stabilization | LOW | HIGH | P3 | Likely unnecessary given DJI gimbal. |
 
 **Priority key:**
-- P1: Must have for launch (addresses table stakes or primary differentiators)
-- P2: Should have, add when possible (enhances UX without blocking launch)
-- P3: Nice to have, future consideration (validate need first or high cost/low value)
+- P1: Must have for launch — delivers core functionality
+- P2: Should have when possible — improves user experience or efficiency
+- P3: Nice to have, future consideration — workflow enhancements
 
-## Competitor Feature Analysis
+## Processing Pipeline Workflow
 
-| Feature | Typical Retreat Sites | High-End Hospitality | Our Approach |
-|---------|----------------------|----------------------|--------------|
-| Hero video | Static images or no video | Autoplay background video | Muted autoplay drone footage (differentiator) |
-| Photo gallery | Basic WordPress gallery | Cloudinary/Imgix with optimization | Cloudinary with lazy load + blur-up (competitive) |
-| Promo video | Embedded YouTube | Self-hosted or Vimeo Pro | Self-hosted with `next-video` (no ads, premium feel) |
-| Mobile optimization | Often poor | Fully responsive | Responsive with data-consciousness (rural market) |
-| Loading performance | Slow (large images) | Fast (CDN + optimization) | Fast via Cloudinary CDN (table stakes) |
-| Video controls | N/A or embedded player | Custom branded controls | Standard HTML5 + pause (accessible, simple) |
-| Accessibility | Often ignored | WCAG 2.1 AA | Muted autoplay, alt text, pause controls (responsible) |
-| Booking flow | Contact form or external link | Integrated reservation system | Contact form (appropriate for budget/scale) |
+Based on research, the standard web video processing workflow is:
 
-## Implementation Notes
+### Stage 1: Preparation (DaVinci Resolve)
+1. **Import raw footage** — 4 DJI drone clips, 21 Canon clips, 58 CR3 photos
+2. **Creative assembly** — Edit hero (15-30s loop) and promo (1-2min tour)
+3. **Color grading** — Apply LUTs for consistent look across drone/Canon footage
+4. **Audio mixing** — Add music + ambient to promo (hero is muted)
+5. **Export intermediate** — High-quality master (ProRes or DNxHD) for archival
+6. **Export LUT** — If applying color correction via FFmpeg later
 
-### Video Optimization Strategy
+### Stage 2: Compression (FFmpeg CLI)
+1. **Trim/Cut** — Extract usable segments from raw footage (if not done in Resolve)
+2. **Apply LUT** — Color correction (if automating)
+3. **Scale resolution** — 720p for hero, 1080p for promo
+4. **Compress to H.264** — CRF 23, preset slow/medium, profile high, level 4.1
+5. **Preserve metadata** — `-map_metadata 0` for DJI stabilization data
+6. **Extract poster frame** — Single frame at 3-5s mark, 1280x720px, <2MB
+7. **Optional: WebM version** — VP9/AV1 encoding for modern browsers
+8. **Optional: Multiple qualities** — Generate 480p, 720p, 1080p bitrate ladder
 
-**Hero Background Video:**
-- Target: 2-5 MB file size, 720p, 10-30 second loop
-- Format: WebM primary (25-35% smaller), MP4 fallback
-- Remove audio track (saves ~23% file size)
-- Use `preload="none"` to defer download
-- Poster image for loading state
-- Muted by default (accessibility + browser policies)
+### Stage 3: Validation (Automated Scripts)
+1. **File size check** — Hero <5MB, promo <10MB
+2. **Resolution check** — Hero 720p, promo 1080p
+3. **Playback test** — Ensure video plays without corruption
+4. **Optional: VMAF score** — Target 90+ for web quality
 
-**Self-Hosted Promo Video:**
-- Use `next-video` package for automatic optimization
-- Outputs adaptive bitrate versions
-- WebM + MP4 formats
-- CDN distribution via Vercel/Cloudinary
-- Add captions if voiceover exists (accessibility)
+### Stage 4: Deployment (Manual)
+1. **Copy to output directory** — `public/assets/videos/`
+2. **Update asset catalog** — Document source -> output mapping
+3. **Commit to git** — Version control for video assets
 
-### Cloudinary Gallery Strategy
+## Real-World Benchmarks
 
-**Optimization Flags:**
-- `f_auto` - Auto format (WebP for modern browsers)
-- `q_auto` - Auto quality optimization
-- `dpr_auto` - Device pixel ratio handling
-- `w_auto` - Responsive breakpoints
-- Blur-up: `q_auto:low` + `e_blur` for placeholder
+Based on research, expected compression results:
 
-**Categories:**
-- Rooms & Sleeping Areas
-- Common/Crafting Spaces
-- Outdoor/Island Views
-- Seasonal (Spring/Summer/Fall/Winter)
-- Events/Gatherings
+| Input | Output (H.264 CRF 23) | Compression Ratio | Quality |
+|-------|----------------------|-------------------|---------|
+| 1080p@30fps, 9min drone | ~100-150MB | ~10:1 | Visually lossless |
+| 1080p@60fps, 5min Canon | ~80-120MB | ~8:1 | Visually lossless |
+| 720p@30fps, 30s hero | ~3-5MB | ~15:1 | High quality |
+| 1080p@30fps, 2min promo | ~8-12MB | ~12:1 | High quality |
 
-**Performance Target:**
-- First Contentful Paint < 1.5s
-- Largest Contentful Paint < 2.5s
-- Total page load < 3s (on 4G)
+**WebM VP9 improvement:** 20-30% smaller files at same quality (e.g., 720p hero ~2-3.5MB)
 
-### Accessibility Checklist
+**Rural connection context:** Target audience may have 1-5 Mbps connections. 5MB hero loads in ~8-40 seconds. Consider 480p fallback if analytics show slow load times.
 
-- [x] Muted autoplay (no audio surprises)
-- [x] Pause/play controls visible and keyboard-accessible
-- [x] Alt text on all images (descriptive, not keyword-stuffed)
-- [x] Video poster/fallback for users with disabled autoplay
-- [x] No unmuted autoplay (violates WCAG)
-- [x] No auto-advancing carousels (motion sickness)
-- [ ] Captions on promo video (if speech/narration exists) - P2
-- [x] Sufficient color contrast on video controls
-- [x] Focus indicators on interactive elements
+## Browser Compatibility
 
-## Budget-Conscious Rural Market Considerations
+| Format | Chrome | Firefox | Safari | Edge | Mobile |
+|--------|--------|---------|--------|------|--------|
+| MP4 (H.264) | ✅ | ✅ | ✅ | ✅ | ✅ Universal |
+| WebM (VP9) | ✅ | ✅ | ❌ | ✅ | ⚠️ Android only |
+| WebM (AV1) | ✅ | ✅ | ❌ | ✅ | ⚠️ Limited |
 
-**Data Sensitivity:**
-- Rural MO may have limited/metered mobile data
-- Lazy loading is essential, not optional
-- Offer pause controls prominently
-- Keep hero video under 5 MB
-- Use blur-up placeholders (perceived performance)
-
-**Connection Speed:**
-- Assume slower 3G/4G, not consistent 5G
-- 720p video is sufficient (not 1080p)
-- Optimize images aggressively
-- CDN is critical (Cloudinary handles this)
-
-**Device Targeting:**
-- Likely older smartphones (not latest iPhones)
-- Test on mid-range Android devices
-- Ensure touch targets are large enough (44x44px min)
-- Avoid cutting-edge browser features (stick to stable APIs)
-
-**Trust & Simplicity:**
-- No aggressive popups or autoplay ads (feels scammy)
-- Simple navigation (older demographic for quilting)
-- Clear contact information (phone number prominent)
-- No complex booking systems (email/phone is fine)
-
-## Technical Recommendations
-
-### Next.js Implementation
-
-**For Hero Video:**
-```jsx
-<video
-  autoPlay
-  muted
-  loop
-  playsInline
-  preload="none"
-  poster="/hero-poster.jpg"
-  className="hero-video"
->
-  <source src="/hero.webm" type="video/webm" />
-  <source src="/hero.mp4" type="video/mp4" />
-</video>
-```
-
-**For Promo Video:**
-```jsx
-import Video from 'next-video';
-import promoVideo from '/videos/promo.mp4';
-
-<Video src={promoVideo} />
-```
-
-**For Cloudinary Images:**
-```jsx
-import { CldImage } from 'next-cloudinary';
-
-<CldImage
-  src="retreat/rooms/queen-bedroom"
-  width="800"
-  height="600"
-  alt="Cozy queen bedroom with quilted bedspread"
-  loading="lazy"
-  sizes="(max-width: 768px) 100vw, 50vw"
-  crop="fill"
-  gravity="auto"
-/>
-```
-
-### Performance Budget
-
-- Hero video: 2-5 MB (optimized)
-- Promo video: 10-20 MB (with adaptive streaming)
-- Images per page: < 2 MB total (lazy loaded)
-- Total page weight: < 5 MB (first load)
-- Time to Interactive: < 3s (4G)
+**Recommendation:** Serve MP4 H.264 for universal compatibility. Add WebM VP9 as `<source>` option for modern browsers. Safari/iOS will fallback to MP4 automatically.
 
 ## Sources
 
-**Video Integration & Performance:**
-- [Optimizing Hero Background Videos - Rigor](https://rigor.com/blog/optimizing-html5-hero-background-videos/)
-- [Fast and Responsive Hero Videos - Simon Hearne](https://simonhearne.com/2021/fast-responsive-videos/)
-- [How to Optimize Silent Background Video - Design TLC](https://designtlc.com/how-to-optimize-a-silent-background-video-for-your-websites-hero-area/)
-- [Next.js Video Optimization Official Docs](https://nextjs.org/docs/app/guides/videos)
-- [Best Practices for Hosting Videos on Vercel](https://vercel.com/guides/best-practices-for-hosting-videos-on-vercel-nextjs-mp4-gif)
-- [Hero Video Tips for Websites - Gecko Agency](https://www.thegeckoagency.com/best-practices-for-filming-choosing-and-placing-a-hero-video-on-your-website/)
+### Video Processing Pipeline
+- [Real-Time Video Pipelines: Techniques & Best Practices - it-jim](https://www.it-jim.com/blog/practical-aspects-of-real-time-video-pipelines/)
+- [Understanding Video Pipelines for Developers - Fastpix](https://www.fastpix.io/blog/a-complete-guide-to-video-pipelines)
+- [Building a scalable video processing pipeline - AWS](https://aws.amazon.com/blogs/machine-learning/building-a-scalable-and-adaptable-video-processing-pipeline-with-amazon-rekognition-video/)
 
-**Gallery Management & Image Optimization:**
-- [Cloudinary Responsive Image Gallery Guide](https://cloudinary.com/guides/responsive-images/responsive-image-gallery)
-- [Cloudinary Lazy Loading for Performance](https://cloudinary.com/blog/lazy_loading_for_optimal_performance)
-- [How Responsive Images Work in Next Cloudinary](https://next.cloudinary.dev/guides/responsive-images)
-- [Hotel Website Design Best Practices - Fireart](https://fireart.studio/blog/7-tips-for-perfect-hotel-website-design/)
-- [Best Hotel Website Designs 2026 - MyCodelessWebsite](https://mycodelesswebsite.com/hotel-website-design/)
+### FFmpeg Compression
+- [How to compress video files with ffmpeg - Mux](https://www.mux.com/articles/how-to-compress-video-files-while-maintaining-quality-with-ffmpeg)
+- [Reducing video file size with FFmpeg - Transloadit](https://transloadit.com/devtips/reducing-video-file-size-with-ffmpeg-for-web-optimization/)
+- [FFmpeg Compress Video Guide - Cloudinary](https://cloudinary.com/guides/video-effects/ffmpeg-compress-video)
+- [Video Transcoding for web with FFmpeg - Medium](https://antongd.medium.com/video-transcoding-and-optimization-for-web-with-ffmpeg-made-easy-511635214df0)
 
-**Retreat Center Specific:**
-- [12 Key Features to Make Your Retreat Websites a Success - Basundari](https://basundari.com/retreat-websites/)
-- [How To Create Video Content for Retreat Audience - WeTravel Academy](https://academy.wetravel.com/create-video-content-retreat-audience)
-- [Essential Retreat Booking System Features - BookingLayer](https://www.bookinglayer.com/article/retreat-booking-system-features)
+### Drone Footage Compression
+- [Compress Drone Video - MiniTool](https://videoconvert.minitool.com/news/compress-drone-video.html)
+- [Best Export Settings for Drone Videos - Man and Drone](https://www.mananddrone.com/best-drone-video-export-settings/)
+- [Encoding Drone Video for the Web - UC Davis](https://igis.ucanr.edu/Tech_Notes/Encode_Drone_Video/)
+- [Compress Drone Videos Without Losing Stabilization Metadata - Alibaba](https://lifetips.alibaba.com/tech-efficiency/compress-drone-videos-without-losing-stabilization-metadata)
 
-**Accessibility & User Experience:**
-- [Why Autoplay Is an Accessibility No-No - BOIA](https://www.boia.org/blog/why-autoplay-is-an-accessibility-no-no)
-- [Auto-Playing Videos Accessibility - Medium](https://maigen.medium.com/why-auto-playing-videos-can-be-an-accessibility-nightmare-and-what-to-do-instead-ce2a53fdfbee)
-- [The Pros and Cons of Autoplaying Videos - SilverServers](https://www.silverservers.com/website-design/the-pros-and-cons-of-autoplaying-videos-on-websites)
-- [Video Autoplay Best Practices - Cloudinary](https://cloudinary.com/guides/video-effects/video-autoplay-in-html)
+### Poster Frame Extraction
+- [Extract thumbnails from a video - Mux](https://www.mux.com/articles/extract-thumbnails-from-a-video-with-ffmpeg)
+- [App Preview Poster Frame Best Practices - Apptamin](https://www.apptamin.com/blog/app-previews-poster-frames/)
+- [Lazy loading video - web.dev](https://web.dev/patterns/web-vitals-patterns/video/video)
 
-**Performance & Self-Hosting:**
-- [Self-Hosting Video Pros and Cons - Invisible Harness](https://www.invisibleharness.com/self-hosting-video-pros-cons/)
-- [Why You Should Never Self-Host Videos - Dacast](https://www.dacast.com/blog/self-hosting-video/)
-- [Vimeo vs YouTube vs Self-Hosted - Workspace Digital](https://workspace.digital/vimeo-youtube-or-self-hosted/)
+### Quality Metrics
+- [Making Sense of PSNR, SSIM, VMAF - Visionular](https://visionular.ai/vmaf-ssim-psnr-quality-metrics/)
+- [VMAF vs. PSNR vs. SSIM - Fastpix](https://www.fastpix.io/blog/understanding-vmaf-psnr-and-ssim-full-reference-video-quality-metrics)
+- [Calculating Video Quality Using NVIDIA GPUs and VMAF - NVIDIA](https://developer.nvidia.com/blog/calculating-video-quality-using-nvidia-gpus-and-vmaf-cuda/)
+- [GitHub - Netflix/vmaf](https://github.com/Netflix/vmaf)
+
+### WebM and Format Fallback
+- [MP4 vs WebM vs AV1 Guide - Practical Web Tools](https://practicalwebtools.com/blog/video-format-conversion-web-2025-guide)
+- [WebM vs. MP4 - Cloudinary](https://cloudinary.com/guides/video-formats/mp4-vs-webm)
+- [How to Create WebM videos with FFmpeg - Mux](https://www.mux.com/articles/how-to-create-webm-videos-with-ffmpeg)
+
+### Scene Detection
+- [Notes on scene detection with FFMPEG - GitHub](https://gist.github.com/dudewheresmycode/054c8de34762091b43530af248b369e7)
+- [PySceneDetect](https://www.scenedetect.com/)
+- [12 Best Scene & Cut Detection Tools - OpusClip](https://www.opus.pro/blog/best-scene-cut-detection-tools-for-editors)
+
+### Color Grading and LUTs
+- [What is a LUT? Ultimate Guide - StudioBinder](https://www.studiobinder.com/blog/what-is-lut/)
+- [How To Apply Color Grading LUTs - Noam Kroll](https://noamkroll.com/how-to-apply-color-grading-luts-professionally-my-workflow-explained/)
+- [Best Free LUTs for Color Grading in 2026 - PresetPro](https://www.presetpro.com/best-free-luts-color-grading-2026/)
+
+### Video Stabilization
+- [How to Stabilize Action Camera Footage - Medium](https://medium.com/@kashafshahid467/how-to-stabilize-action-camera-footage-in-post-production-10a0afadc49f)
+- [Best Video Stabilization Software in 2026 - Movavi](https://www.movavi.com/learning-portal/video-stabilization-software.html)
+- [Gyroflow v1.6.3](https://gyroflow.xyz/)
+
+### Asset Management
+- [Digital Asset Management Best Practices - Cloudinary](https://cloudinary.com/guides/digital-asset-management/digital-asset-management)
+- [Video asset management best practices - LucidLink](https://www.lucidlink.com/blog/video-asset-management)
+- [What Is Media Asset Management? - AWS](https://aws.amazon.com/what-is/media-asset-management/)
+
+### Automated Quality Testing
+- [AI in Video Testing and Monitoring - Witbe](https://www.witbe.net/articles/ai-real-device-video-testing-monitoring/)
+- [Automated Testing for Video Streaming Apps - Fastpix](https://www.fastpix.io/blog/how-to-automate-testing-for-video-streaming-platform)
+- [Automated file-based quality control - Telestream](https://www.telestream.net/vidchecker/overview.htm)
 
 ---
-*Feature research for: Timber & Threads Retreat Center - Video Integration & Gallery Management*
-*Researched: 2026-02-14*
-*Confidence: MEDIUM (verified via web search; official docs for Next.js/Cloudinary; no Context7 data)*
+*Feature research for: Web Video Processing Pipeline (Raw Footage to Web-Ready Deliverables)*
+*Researched: 2026-02-16*
+*Research confidence: HIGH — FFmpeg and web video standards well-documented across official sources and industry best practices*

@@ -1,307 +1,249 @@
 # Project Research Summary
 
-**Project:** Timber & Threads Retreat Center - Video & Gallery Enhancement
-**Domain:** Next.js 14 website enhancement with video integration and Cloudinary gallery migration
-**Researched:** 2026-02-14
+**Project:** Timber & Threads Video Processing (v1.1)
+**Domain:** CLI video processing pipeline for raw drone/camera footage conversion to web-ready deliverables
+**Researched:** 2026-02-16
 **Confidence:** HIGH
 
 ## Executive Summary
 
-This is a Next.js 14 enhancement project for a retreat center website, adding promo video integration (hero background + dedicated section) and migrating image gallery from file-based storage to Cloudinary. The site is deployed on Vercel with existing infrastructure: Next.js 14.2.24 with App Router, Tailwind CSS, and a broken file-based gallery system caused by Vercel's read-only filesystem.
+This milestone involves processing 14+ minutes of raw drone (DJI Mavic Air) and interior camera (Canon) footage from a Feb 15, 2026 shoot into two web-optimized deliverables: a 15-30s hero background loop (<5MB, 720p, muted) and a 1-2min property promo video (<10MB, 1080p, with music). The recommended approach splits work between CLI automation (FFmpeg for compression/trimming, auto-editor for silence detection) and creative editing (DaVinci Resolve for assembly, color grading, music sync).
 
-The recommended approach prioritizes fixing the broken gallery infrastructure first, then adding video capabilities. Use Cloudinary for both images AND videos to stay within budget constraints (both have generous free tiers). The critical architectural insight is that Vercel's serverless environment requires external persistent storage - Cloudinary for media, Vercel KV for metadata - rather than file-based databases. Video files must be aggressively compressed (<10MB total) to avoid bandwidth exhaustion on Vercel's 100GB free tier, with mobile-specific optimizations mandatory for rural Missouri target audience.
+Industry best practice for this workflow is a two-pass architecture: (1) CLI preprocessing reduces 14min of raw footage to trimmed, cataloged segments, removing dead space automatically; (2) DaVinci Resolve handles creative decisions on pre-processed clips, exporting high-quality masters (ProRes/DNxHR); (3) FFmpeg performs final web compression with strict size targeting using two-pass encoding. This separation avoids manual tedium (cataloging 25+ clips, silence detection) while preserving creative control where it matters (pacing, color, music).
 
-Key risks center on bandwidth consumption (both Vercel and Cloudinary free tiers) and mobile performance degradation from unoptimized video. Mitigation: compress all videos to <5MB each, implement connection detection to disable video on 3G/slow connections, use next-cloudinary components exclusively (not direct Image component with Cloudinary URLs), and establish quota monitoring from day one. The tight 1-week timeline and $400-600 budget make external CDN usage (Cloudinary) more cost-effective than self-hosting infrastructure.
+The primary risks are file size unpredictability (CRF-only encoding can miss <5MB/<10MB targets), lost DJI stabilization metadata (breaks Resolve features), and Safari compatibility (wrong pixel format causes black screens for 30-40% of users). All are preventable with explicit FFmpeg flags: two-pass encoding with calculated bitrate for size targets, `-map_metadata 0` for DJI footage preservation, and `-pix_fmt yuv420p -movflags +faststart` for universal browser compatibility.
 
 ## Key Findings
 
 ### Recommended Stack
 
-**Critical finding:** The current architecture has a production bug - file-based JSON database (db.json) fails on Vercel's read-only filesystem. This must be resolved before any new features. Stack research identified Cloudinary + next-cloudinary as the optimal solution for both images and videos within budget constraints.
+The optimal stack is 100% free, battle-tested, and matches industry workflows used by YouTube, Netflix, and professional editors. FFmpeg 8.0.1 handles all compression, format conversion, metadata extraction, and poster frame generation. DaVinci Resolve 20.3.2 Free provides professional-grade creative editing with no watermark. auto-editor 29.7.0 automates silence detection for drone/ambient footage with customizable thresholds.
 
 **Core technologies:**
-- **Next.js 14.2.24 (current) → 15.1.11+ (optional upgrade)**: Already in use with App Router. Provides server components for bundle size reduction. Next.js 15 adds Cache Components but upgrade is optional, not required.
-- **next-cloudinary 6.17.5+**: Unified image/video optimization library. Provides CldImage and CldVideoPlayer components with automatic format optimization (WebP, AVIF), adaptive streaming (HLS/DASH), and transformation API. Medium Source Reputation (79.6 benchmark), 380 code snippets.
-- **Cloudinary 2.5.1+ (SDK)**: Cloud-based media hosting and CDN. Free tier: 25 GB storage + 25 GB bandwidth. Solves read-only filesystem issue by providing persistent cloud storage. Cost-effective for budget projects vs self-hosting + CDN.
-- **sharp 0.33.5+**: Already installed. Strongly recommended by Next.js for production image optimization. 20-60% faster than alternatives.
-- **@next/bundle-analyzer**: For performance optimization phase. Identifies bloated dependencies. Works with both Webpack and Turbopack.
+- **FFmpeg 8.0.1** (compression, trimming, metadata) — industry standard for video processing, universal browser codec support (H.264/AAC), 30+ years production-proven
+- **DaVinci Resolve 20.3.2 Free** (creative editing, color grading) — professional NLE with full feature set, native H.264 support, free version has no watermark or 4K limitations
+- **auto-editor 29.7.0** (silence detection, automated trimming) — analyzes audio to identify dead space, exports cut lists or pre-trimmed clips, saves hours vs manual scrubbing
+- **Python 3.11+** (batch processing scripts) — system-installed on Arch, required for auto-editor, enables parallel FFmpeg jobs
 
-**Critical configuration changes required:**
-- Remove `images.unoptimized: true` from next.config.js (currently disables all optimization)
-- Add Cloudinary to remotePatterns for res.cloudinary.com
-- Enable optimizePackageImports for icon libraries (15-70% dev time improvement)
+**Critical versions:**
+- FFmpeg 8.0.1 (Nov 2025 stable release, includes libx264/libx265/AAC)
+- auto-editor from GitHub (NOT PyPI — PyPI version is 3+ years outdated at 22.17.1)
+- DaVinci Resolve 20.3.2 (Feb 2026, latest with improved trim editor)
 
 ### Expected Features
 
-Research identified a clear MVP scope focusing on performance and mobile-first design for rural Missouri audience.
-
 **Must have (table stakes):**
-- Mobile-optimized gallery (60%+ traffic from mobile) - Cloudinary handles responsive breakpoints automatically
-- Lazy-loaded images - Browser-native loading="lazy" + Cloudinary optimization
-- Gallery categories/organization - Simple filter/tab UI over categorized images
-- Fast page load (<3s) - Critical for rural connections; requires video optimization + CDN
-- Muted autoplay hero video - Industry standard for hospitality sites, accessibility requirement
-- Video fallback image - Hero video needs static placeholder for slow connections
-- Alt text on all images - Accessibility requirement + SEO benefit
+- **Video compression** — raw footage unusable at web scale, H.264 with CRF 23 standard
+- **Format conversion** — MOV/MP4 sources to web-compatible MP4 containers
+- **Resolution scaling** — 720p for hero (bandwidth optimization), 1080p for promo
+- **Poster frame extraction** — HTML5 video fallback images, avoid blank screen pre-playback
+- **Trim/cut raw footage** — 14min raw to 15-30s + 1-2min deliverables
+- **Metadata preservation** — DJI stabilization data critical for Resolve quality
+- **Quality validation** — automated checks for size <5MB/<10MB, resolution correct, playback functional
 
 **Should have (competitive):**
-- Self-hosted promo video (no YouTube ads/branding) - Professional feel, using next-cloudinary CldVideoPlayer
-- Drone footage showcase - Unique island location differentiator
-- Progressive image loading (blur-up) - Smooth UX despite slower rural connections
-- Pause control for hero video - Respectful of data usage, accessibility
-- Dedicated "Virtual Tour" section - Helps remote users visualize space
-- Gallery metadata/captions - Tell story of quilting space and family-friendly features
+- **Batch processing pipeline** — automate cataloging, silence detection, compression for 25+ clips
+- **Scene detection** — identify shot boundaries in 9min drone footage for cataloging
+- **VMAF quality metrics** — objective quality validation (Netflix standard, target 90+)
+- **Multiple quality levels** — 480p/720p/1080p for rural Missouri audience adaptive delivery
 
 **Defer (v2+):**
-- Video testimonials from guests (need to collect content first)
-- 360° photo tours (high production cost, validate need first)
-- Integrated booking system (scope creep, contact form sufficient)
-- Video analytics (optimization for later, focus on launch)
-
-**Anti-features to avoid:**
-- Unmuted autoplay video (accessibility nightmare, annoying, browsers block it)
-- Auto-advancing gallery carousel (accessibility issues, motion sickness)
-- Full 1080p+ video everywhere (massive file sizes, 720p sufficient for web)
-- Video hosted on own server without CDN (bandwidth costs, no optimization)
-- Infinite scroll gallery (hard to reach footer, accessibility issues)
+- **HLS/DASH adaptive streaming** — overkill for 15-30s/1-2min videos, static multi-quality simpler
+- **WebM fallback format** — 20-30% file size savings, but add after MP4 working
+- **Automated color correction** — DaVinci handles this; automation only valuable for recurring shoots
+- **Video stabilization** — DJI gimbal + in-camera stabilization likely sufficient
 
 ### Architecture Approach
 
-Standard Next.js 14 App Router architecture with serverless API routes and external persistent storage. The key architectural pattern is separation of concerns: static video files in /public (compressed <10MB total), Cloudinary for image/video CDN delivery, and Vercel KV for metadata persistence. Current file-based database must be replaced with Vercel KV to fix production bugs.
+The pipeline follows a five-stage architecture: (1) Cataloging Layer generates thumbnails and metadata for visual browsing of 25+ clips; (2) Silence Detection Layer uses auto-editor to identify dead space in drone/ambient footage; (3) Trimmed Segments Layer applies cut lists via FFmpeg stream copy (fast, lossless); (4) Creative Edit Layer in DaVinci Resolve handles assembly, color grading, music sync, exporting ProRes/DNxHR masters; (5) Web Compression Layer performs final H.264 encoding with two-pass bitrate targeting for guaranteed <5MB/<10MB sizes.
 
 **Major components:**
-1. **Hero Component** - Display hero section with background video using HTML5 `<video>` tag, autoplay, loop, muted, playsInline attributes. Static MP4 from /public/assets/videos/.
-2. **Gallery Component** - Display Cloudinary-hosted images using CldImage from next-cloudinary with lazy loading. Fetch metadata from /api/gallery route backed by Vercel KV.
-3. **VideoSection Component** - Dedicated promo video section using CldVideoPlayer for automatic optimization, adaptive streaming, and proper controls.
-4. **API Gallery Route** - CRUD operations for gallery images using Cloudinary SDK + Vercel KV for metadata. Replaces broken file-based db.json.
-5. **Cloudinary Integration Layer** - Centralized configuration (lib/cloudinary.ts) with upload helpers, transformation presets, and SDK initialization.
+1. **Raw Footage Storage** — preserve original camera files untouched in drone-clips/ and timberandthreads-promo-clips/
+2. **CLI Preprocessing (FFmpeg + auto-editor)** — catalog (thumbnails, metadata), silence detection, batch trimming to processing/trimmed/
+3. **Creative Editor (DaVinci Resolve)** — manual assembly, color grading, music integration, export to exports/ as ProRes/DNxHR
+4. **Web Compressor (FFmpeg)** — two-pass H.264 encoding with calculated bitrate, faststart flag, yuv420p pixel format
+5. **Deployment Pipeline** — copy compressed videos + poster frames to public/assets/videos/ for Vercel delivery
 
-**Critical patterns:**
-- **Self-hosted video delivery:** For videos <50MB, serve from /public via Vercel's Edge Network. Simple, no external dependencies. Target <10MB total to avoid bandwidth exhaustion.
-- **Cloudinary for gallery:** Use as CDN and optimization service. Solves read-only filesystem issue, provides persistent storage, automatic format optimization (WebP, AVIF).
-- **Vercel KV for metadata:** Replace file-based JSON database with Redis. Persistent across deployments, fast read/write, integrated with Vercel. Free tier: 256MB storage, 100K reads/month.
-- **Signed uploads for security:** Generate server-side signatures for Cloudinary uploads to prevent unauthorized access and quota theft.
-- **Progressive enhancement:** Lazy loading, skeleton states, optimized delivery. Intersection Observer for images, preload="none" for videos.
+**Key patterns:**
+- **Two-pass workflow** — CLI preprocessing (automation) → Resolve (creativity) → FFmpeg (web compression)
+- **Catalog-first** — generate thumbnails/metadata before editing for visual selection of 25+ clips
+- **Silence detection with margins** — auto-editor with 0.1-0.3s margins preserves natural pacing
+- **Master export → web compression** — Resolve exports ProRes/DNxHR, FFmpeg compresses separately (avoids double compression)
+- **Reference workflow** — Resolve links to processing/trimmed/ instead of copying (no duplication, single source of truth)
 
 ### Critical Pitfalls
 
-1. **Vercel Free Tier Bandwidth Exhaustion** - Serving self-hosted video directly from Vercel deployment rapidly exhausts 100GB monthly bandwidth limit. A single 50MB video = only 2,000 loads before limit hit. Background video auto-looping can reach limit in days. **Prevention:** Compress videos aggressively (<10MB for hero, <25MB for promo), use multiple quality versions (1080p desktop, 720p mobile), implement adaptive loading for slow connections, monitor dashboard daily during first week.
+1. **File size unpredictability with CRF-only encoding** — CRF prioritizes quality over size, producing unpredictable results (same CRF can yield 3MB or 8MB). **Fix:** Use two-pass encoding with calculated bitrate for final web delivery: `(target_MB × 8192) / duration_sec = bitrate_kbps`. CRF for editing workflows, two-pass for web delivery.
 
-2. **Incorrect Video Compression Settings** - Default FFmpeg settings produce either massive file sizes or unacceptable quality loss. Drone footage has unique compression challenges (high motion, detailed landscapes). H.265/HEVC without proper Safari tags (`-tag:v hvc1`) causes playback failures. **Prevention:** Use `ffmpeg -i input.mp4 -c:v libx264 -crf 23 -preset medium -movflags +faststart` for H.264 (universal), or `ffmpeg -i input.mp4 -c:v libx265 -crf 28 -tag:v hvc1 -movflags +faststart` for H.265. Always include `-movflags +faststart` for web streaming. Test CRF values on actual drone footage samples.
+2. **Lost DJI stabilization metadata** — naive FFmpeg commands strip gyroscopic timestamps, breaking Resolve stabilization features. **Fix:** Always use `-map_metadata 0 -map_metadata:s:v 0:s:v` when processing DJI footage. Better: import originals to Resolve, use proxy workflow (no compression).
 
-3. **Hero Background Video Mobile Performance Disaster** - Background video destroys mobile performance: slow page loads, excessive data consumption on cellular, autoplay failures, fullscreen takeover in Safari. Lighthouse mobile scores drop from 90+ to <50. **Prevention:** Required attributes `<video autoPlay muted loop playsInline>`, set `preload="metadata"` not "auto", implement mobile/connection detection to disable video on 3G/slow connections, create mobile-specific ultra-compressed version (<5MB), always provide high-quality poster image fallback, test on real device with throttled connection.
+3. **Missing faststart flag breaks progressive playback** — MOOV atom at file end requires full download before playback, creating 5-10s delays on rural connections. **Fix:** Always include `-movflags +faststart` for web video (moves metadata to start, enables streaming).
 
-4. **Cloudinary Migration URL Breakage** - After migrating gallery images to Cloudinary, production build contains broken image links, missing images. Developers forget to update all URL references (hardcoded paths, CSS backgrounds, JSON data). Not configuring next.config.js remotePatterns causes Image component failures. **Prevention:** Grep entire codebase for image references before migration, update next.config.js FIRST to allow res.cloudinary.com, maintain URL mapping file (old-path → cloudinary-public-id), implement 301 redirects for old URLs during transition, test in Vercel preview environment before production.
+4. **Wrong pixel format breaks Safari** — yuv422p/yuv444p formats work in Chrome but fail in Safari/iOS (30-40% of users). **Fix:** Always specify `-pix_fmt yuv420p` for universal browser compatibility.
 
-5. **Next.js Build Size Exceeds Vercel Limits** - Placing large video files (50-100MB) in /public directory causes deployment failure ("Serverless Function exceeded 250 MB"). Multiple video versions compound the problem. **Prevention:** NEVER put videos >10MB total in /public - use external storage, compress aggressively (<5MB per file), limit to maximum 2-3 video files, enable standalone output in next.config.js, monitor build size locally with `du -sh .next/`.
+5. **Seamless loop mismatch** — random trim points create jarring "jump" every loop cycle on hero background. **Fix:** Select footage with matched start/end frames, keep loops short (6-8s ideal), test 3+ cycles before deployment.
+
+6. **Incorrect frame rate conversion** — using `-r 30` flag doubles playback speed (60fps → 30fps in half duration). **Fix:** Use `-filter:v "fps=30"` to maintain duration with intelligent frame selection.
+
+7. **Unoptimized audio bloats file size** — 320kbps source audio wastes 30-50% of size budget. **Fix:** Strip audio entirely for muted hero (`-an`), use AAC 128kbps for promo music (`-b:a 128k`).
+
+8. **Corrupt DJI file blocks pipeline** — DJI_0018.MP4 has missing MOOV atom, stops batch processing. **Fix:** Implement validation with `ffprobe`, skip corrupt files gracefully, log to processing notes.
+
+9. **Poor keyframe interval breaks scrubbing** — default 10+ second GOP causes 2-5s seek delays. **Fix:** Set `-g 60` (2-second keyframe intervals at 30fps) for responsive web scrubbing.
+
+10. **Double compression degrades quality** — exporting H.264 from Resolve, re-encoding with FFmpeg compounds generation loss. **Fix:** Export ProRes/DNxHR from Resolve, compress once with FFmpeg.
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure prioritizes fixing broken infrastructure before adding new features:
+Based on research, the work splits into **3 phases** aligned with the existing milestone structure:
 
-### Phase 1: Foundation & Video Optimization
-**Rationale:** Current gallery system is broken in production (file-based db.json on read-only filesystem). Must fix this foundational issue before building new features. Pair with video optimization to establish compression workflow early and avoid bandwidth disasters.
-
-**Delivers:**
-- Cloudinary account setup and configuration (lib/cloudinary.ts)
-- Vercel KV integration for persistent metadata storage
-- Video compression pipeline (FFmpeg settings, multi-resolution versions)
-- Compressed video assets (<10MB total) ready for deployment
-
-**Addresses:**
-- CRITICAL: Fixes broken gallery persistence in production
-- Establishes video optimization workflow before deployment
-- Sets up infrastructure for all subsequent work
-
-**Avoids:**
-- Vercel bandwidth exhaustion (Pitfall 1)
-- Incorrect video compression (Pitfall 2)
-- Build size exceeding limits (Pitfall 5)
-
-**Research flag:** Standard setup, well-documented patterns - skip additional research
-
-### Phase 2: Gallery Migration to Cloudinary
-**Rationale:** With Cloudinary and Vercel KV infrastructure in place, migrate existing gallery images and update all references. This must happen before video integration to avoid compounding complexity and ensure gallery is working before adding more media.
+### Phase 1: Video Processing Infrastructure (CLI Setup)
+**Rationale:** Establish toolchain and processing workflow before touching creative work. Cataloging 25+ clips and validating DJI footage quality gates all downstream work. Prevents rework from wrong compression settings or lost metadata.
 
 **Delivers:**
-- Migrated gallery images to Cloudinary with optimized delivery
-- Updated Gallery component using CldImage from next-cloudinary
-- Updated API routes using Vercel KV for metadata (replaces db.json)
-- Comprehensive URL mapping file (old paths → Cloudinary public IDs)
-- Updated next.config.js with remotePatterns for Cloudinary
+- FFmpeg 8.0.1 + auto-editor 29.7.0 installation verified
+- Catalog of all drone/Canon clips (thumbnails, metadata, duration)
+- Corrupt DJI_0018.MP4 identified and documented
+- Silence detection applied to clips with significant dead space
+- Trimmed segments in processing/trimmed/ ready for Resolve import
+- Compression script templates (hero 720p, promo 1080p) with correct flags
 
-**Uses:**
-- next-cloudinary 6.17.5+ for CldImage components
-- Cloudinary SDK for upload and API operations
-- Vercel KV for metadata persistence
+**Addresses (from FEATURES.md):**
+- Asset cataloging
+- Metadata preservation
+- Quality validation
+- Batch processing pipeline
 
-**Implements:**
-- Gallery Component architecture pattern
-- API Gallery Route with Vercel KV backend
-- Signed uploads for security
+**Avoids (from PITFALLS.md):**
+- Corrupt file blocking (Pitfall 8 - implement validation)
+- Lost DJI metadata (Pitfall 2 - establish import workflow)
+- Missing faststart/wrong pixel format (Pitfalls 3, 4 - embed in templates)
+- Frame rate conversion errors (Pitfall 6 - test Canon 60fps → 30fps)
 
-**Avoids:**
-- Cloudinary migration URL breakage (Pitfall 4)
-- Next.js Image component misuse (Pitfall 7 from PITFALLS.md)
+**Research needs:** NONE — FFmpeg and auto-editor are well-documented with official guides. Phase can proceed directly to task breakdown.
 
-**Research flag:** Standard Cloudinary migration - skip additional research, follow established patterns from ARCHITECTURE.md
-
-### Phase 3: Video Integration (Hero + Promo Section)
-**Rationale:** With gallery working and video assets optimized, add hero background video and dedicated promo section. This phase is independent from gallery work and can leverage optimized video pipeline from Phase 1.
-
-**Delivers:**
-- Updated Hero component with background video (muted autoplay loop)
-- New VideoSection component with dedicated promo video player
-- Poster images for fallback states
-- Mobile-responsive video loading with connection detection
-- Video assets deployed to /public/assets/videos/
-
-**Addresses:**
-- Hero background video (must-have feature)
-- Self-hosted promo video (differentiator)
-- Video pause controls (must-have)
-- Video fallback image (must-have)
-
-**Implements:**
-- Hero Component architecture pattern
-- VideoSection Component architecture pattern
-- Self-hosted video delivery pattern from ARCHITECTURE.md
-
-**Avoids:**
-- Hero background video mobile performance disaster (Pitfall 3)
-- Autoplay failures on iOS (proper attributes)
-
-**Research flag:** Standard HTML5 video implementation - skip additional research, use patterns from STACK.md + ARCHITECTURE.md
-
-### Phase 4: Performance Optimization & Polish
-**Rationale:** With all features implemented, optimize performance to meet targets for rural Missouri audience. Focus on Core Web Vitals, mobile performance, and bandwidth efficiency.
+### Phase 2: Creative Video Editing (DaVinci Resolve)
+**Rationale:** Creative decisions (clip selection, pacing, color, music) require human judgment. Must happen after preprocessing (Phase 1) provides trimmed, cataloged clips. Before web compression (Phase 3) since Resolve exports masters.
 
 **Delivers:**
-- Lazy loading for images (first 6 eager, rest lazy)
-- Progressive blur-up placeholders for gallery images
-- Optimized video preload attributes and poster images
-- Bundle analysis and optimization (icon library tree-shaking)
-- Mobile-specific optimizations (connection detection, disabled video on 3G)
-- Performance testing on throttled connections (Fast 3G)
+- DaVinci Resolve project with organized bins (Drone, Canon, Audio, GFX)
+- Hero background timeline (15-30s loop, seamless start/end match)
+- Promo video timeline (1-2min, music + ambient sound, color graded)
+- Master exports (ProRes 422 or DNxHR HQ) to exports/ directory
+- Poster frame candidates identified (compelling 3-5s timestamps)
 
-**Addresses:**
-- Fast page load <3s (must-have)
-- Progressive image loading (differentiator)
-- Mobile-optimized gallery (must-have)
-- Lazy-loaded images (must-have)
+**Uses (from STACK.md):**
+- DaVinci Resolve 20.3.2 Free (creative NLE)
+- Processing/trimmed/ clips from Phase 1
+- auto-editor XML timelines (optional, for pre-trimmed imports)
 
-**Uses:**
-- @next/bundle-analyzer for bundle size optimization
-- optimizePackageImports in next.config.js
-- Cloudinary optimization features (blur-up, responsive sizing)
+**Implements (from ARCHITECTURE.md):**
+- Creative Edit Layer (Component 3)
+- Reference workflow (Resolve links to processing/trimmed/)
+- Version-controlled timelines (v1, v2, FINAL)
 
-**Avoids:**
-- Loading all gallery images eagerly (Performance Trap)
-- Excessive preloading with priority={true} (Performance Trap)
-- Uncompressed hero background video (Performance Trap)
+**Avoids (from PITFALLS.md):**
+- Seamless loop mismatch (Pitfall 5 - test 3+ loop cycles)
+- Double compression (Pitfall 10 - export ProRes/DNxHR, not H.264)
+- Editing raw footage directly (Anti-pattern 1 - use trimmed clips from Phase 1)
 
-**Research flag:** Skip additional research - leverage Lighthouse, Chrome DevTools, and established performance patterns
+**Research needs:** NONE — DaVinci Resolve workflows are standard NLE patterns. Creative editing doesn't require technical research.
+
+### Phase 3: Web Optimization & Deployment
+**Rationale:** Final compression must happen after creative approval (Phase 2) since web encoding is lossy and targets strict file sizes. Poster extraction requires final compressed video (not masters) to match delivered quality/aspect ratio.
+
+**Delivers:**
+- Hero background: 720p H.264, <5MB, muted, seamless loop, faststart enabled
+- Promo video: 1080p H.264, <10MB, AAC 128kbps, faststart enabled
+- Poster frames: hero-poster.jpg (1280x720), promo-poster.jpg (1920x1080)
+- Files deployed to public/assets/videos/ and committed
+- Verification: Safari/iOS tested, file sizes confirmed, scrubbing responsive
+
+**Uses (from STACK.md):**
+- FFmpeg 8.0.1 (two-pass encoding, poster extraction)
+- exports/ masters from Phase 2 as input
+- Two-pass bitrate calculation: `(5 × 8192) / 20sec = 2048kbps` (hero)
+
+**Implements (from ARCHITECTURE.md):**
+- Web Compression Layer (Component 4)
+- Master export → web compression pattern (Pattern 5)
+- Deployment pipeline (copy to public/assets/videos/)
+
+**Avoids (from PITFALLS.md):**
+- File size unpredictability (Pitfall 1 - two-pass encoding with calculated bitrate)
+- Missing faststart (Pitfall 3 - explicit `-movflags +faststart`)
+- Wrong pixel format (Pitfall 4 - explicit `-pix_fmt yuv420p`)
+- Poor keyframe interval (Pitfall 9 - set `-g 60` for 2s GOP)
+- Unoptimized audio (Pitfall 7 - `-an` for hero, `-b:a 128k` for promo)
+
+**Research needs:** NONE — FFmpeg compression flags are well-documented. Phase can proceed directly to task breakdown.
 
 ### Phase Ordering Rationale
 
-**Why this order:**
-1. **Foundation first (Phase 1)** - File-based database is broken in production (critical bug). Cannot build new features on broken infrastructure. Cloudinary setup enables both gallery and video work. Video optimization must happen before deployment to avoid bandwidth disasters.
+- **Phase 1 before 2:** Must catalog and preprocess raw footage before creative editing. Importing 25+ uncataloged clips into Resolve wastes time. Silence detection reduces manual trimming labor.
+- **Phase 2 before 3:** Must complete creative edit and export masters before web compression. Compressing before creative approval leads to rework when client requests changes.
+- **Phase 3 standalone:** Web compression is independent, repeatable process. Can re-run with different settings (tighter size targets, different resolutions) without touching creative edit.
 
-2. **Gallery before video (Phase 2)** - Gallery is existing functionality that needs fixing, video is new. Migrating gallery establishes Cloudinary patterns that video work can leverage. Separating gallery and video work reduces complexity and allows for focused testing.
-
-3. **Video integration independent (Phase 3)** - Uses completely separate architecture (static files + HTML5 video vs Cloudinary API). Can be developed in parallel with Phase 2 if needed, but sequential order reduces risk.
-
-4. **Performance last (Phase 4)** - Requires all components to be in place for holistic optimization. Bundle analysis only useful once all dependencies are installed. Lazy loading strategies depend on final component structure.
-
-**Dependency structure:**
-- Phase 1 → Phase 2 (critical path: Cloudinary/KV setup enables gallery migration)
-- Phase 1 → Phase 3 (video optimization enables video integration)
-- Phases 2 + 3 → Phase 4 (performance requires all features implemented)
-
-**Grouping rationale:**
-- Phase 1 groups infrastructure setup with video optimization because both must happen before deployment
-- Phase 2 is isolated gallery work to reduce complexity and enable focused testing
-- Phase 3 is isolated video work using patterns established in Phase 1
-- Phase 4 is holistic optimization across all implemented features
-
-**How this avoids pitfalls:**
-- Early compression workflow (Phase 1) prevents bandwidth exhaustion and build size issues
-- Gallery migration before video (Phase 2) avoids compounding complexity when debugging URL breakage
-- Mobile testing in performance phase (Phase 4) catches background video mobile disasters before production
-- Sequential phases with clear boundaries enable Vercel preview testing between each phase
+This structure avoids circular dependencies (each phase consumes output from previous) and minimizes rework (CLI preprocessing is automated, creative edit is human-approved, web compression is deterministic).
 
 ### Research Flags
 
 **Phases with standard patterns (skip research-phase):**
-- **Phase 1:** Cloudinary setup and FFmpeg video compression are well-documented with established patterns. Use official docs and STACK.md recommendations.
-- **Phase 2:** Cloudinary migration has extensive documentation and community examples. Follow Architecture.md patterns for Vercel KV integration.
-- **Phase 3:** HTML5 video implementation is standard web development. Use patterns from STACK.md and ARCHITECTURE.md.
-- **Phase 4:** Performance optimization uses standard tools (Lighthouse, bundle-analyzer) with well-established techniques.
+- **Phase 1:** FFmpeg cataloging, auto-editor silence detection, batch trimming — well-documented CLI tools with official guides and community tutorials. Proceed directly to task breakdown.
+- **Phase 2:** DaVinci Resolve NLE workflow — standard video editing patterns (bin organization, timeline versions, master exports). No domain-specific complexity.
+- **Phase 3:** FFmpeg web compression — H.264 encoding parameters, two-pass bitrate targeting, browser compatibility flags. Industry-standard patterns with authoritative sources (Mux, Cloudinary, slhck CRF guide).
 
-**No phases require additional research.** All four phases can be implemented using findings from completed research documents (STACK.md, FEATURES.md, ARCHITECTURE.md, PITFALLS.md).
+**No phases need deeper research.** All three phases use established tools (FFmpeg, DaVinci Resolve) with comprehensive documentation and proven workflows. The research completed provides sufficient detail for task-level planning.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Verified with official Next.js, Cloudinary, and Vercel docs. Context7 data for next-cloudinary (380 snippets). Sharp and bundle-analyzer are official Next.js recommendations. |
-| Features | MEDIUM | Web search sources for retreat center best practices, hospitality site standards, and video optimization. No Context7 data, but multiple sources converge on same recommendations. |
-| Architecture | HIGH | Official Vercel and Next.js documentation for serverless patterns, Cloudinary integration guides, established patterns for App Router. Clear architectural requirements based on platform constraints. |
-| Pitfalls | HIGH | Official Vercel documentation on limits, Next.js video optimization guides, Cloudinary pricing and quota documentation. Multiple web search sources confirm compression settings and mobile performance issues. |
+| Stack | HIGH | FFmpeg 8.0.1, DaVinci Resolve 20.3.2, auto-editor 29.7.0 versions verified from official sources (FFmpeg.org, Blackmagic Design, GitHub releases). Installation steps tested on Arch Linux. |
+| Features | HIGH | Table stakes (compression, trimming, metadata preservation) confirmed across multiple authoritative sources (Mux, Cloudinary, AWS). Differentiators (scene detection, VMAF) documented with clear use cases. |
+| Architecture | HIGH | Five-layer pipeline (catalog → silence detection → trim → creative edit → web compression) matches industry best practices from Fastpix, Frame.io, AWS video pipeline guides. DaVinci Resolve integration patterns verified from Alecaddd, Coert Vonk. |
+| Pitfalls | HIGH | All 10 critical pitfalls sourced from authoritative guides (Mux FFmpeg optimization, slhck CRF guide, DJI metadata preservation research). File size/faststart/pixel format issues confirmed across multiple production deployment cases. |
 
 **Overall confidence:** HIGH
 
-All four research areas have strong source backing (official docs, Context7, or converging web search results). The architecture is dictated by Vercel's serverless constraints (well-documented). Stack recommendations come from official sources. Pitfalls are backed by Vercel's official documentation on limits and Next.js best practices.
-
 ### Gaps to Address
 
-**Cloudinary free tier usage estimation:**
-- Research calculated estimated usage based on "low-traffic retreat center" assumption
-- **Gap:** Actual traffic patterns unknown - could exceed 25GB bandwidth if site gets unexpected viral attention
-- **Mitigation:** Set up Cloudinary usage alerts (available in dashboard), monitor weekly during first month, have contingency plan for upgrading to paid tier (~$5-10/month if needed)
+**DJI_0018.MP4 corruption extent unknown:** Research confirms file is corrupt (MOOV atom missing), but exact cause unclear (crash? battery death? recording interrupted?). **Handle during Phase 1:** Validate with `ffprobe`, document as unrecoverable, skip gracefully in batch scripts. If footage is critical, attempt DJIFIX tool recovery (success rate ~50% per research).
 
-**Video quality vs file size tradeoff:**
-- FFmpeg CRF settings provided (23 for H.264, 28 for H.265) are starting points
-- **Gap:** Optimal CRF for specific drone footage requires testing on actual content
-- **Mitigation:** Phase 1 includes testing compression on sample drone footage before batch processing. Iterate CRF values (22, 23, 24) until quality/size balance is acceptable.
+**Optimal hero video loop duration undetermined:** Research recommends 6-8s for seamless loops (vs 15-30s requirement). Shorter loops hide mismatch better, but 15-30s may be stakeholder requirement. **Handle during Phase 2:** Test both options (6-8s tight loop vs 15-30s with careful endpoint matching), validate with 3+ loop cycles, confirm with client before finalizing.
 
-**Mobile device diversity:**
-- Performance targets assume mid-range Android devices and recent iPhones
-- **Gap:** Unknown exact device distribution for rural Missouri audience
-- **Mitigation:** Use Chrome DevTools throttling (Fast 3G) for baseline testing, implement progressive enhancement so video failure doesn't break core experience, rely on poster images as fallbacks
+**Audio bitrate for rural Missouri connections:** Research recommends AAC 128kbps for music, but rural 1-5 Mbps connections may benefit from 96kbps. **Handle during Phase 3:** Encode promo at 128kbps first (standard quality), validate load time on deployed preview. If >10s delay on slow connections, re-encode at 96kbps and A/B test quality acceptability.
 
-**Next.js 14 vs 15 upgrade timing:**
-- Research notes Next.js 15 is stable with Cache Components feature
-- **Gap:** Unclear if upgrade provides meaningful benefit for this specific project
-- **Mitigation:** Stay on Next.js 14.2.24 (currently working). Optional upgrade to 15.x can be deferred to post-launch optimization if needed. No breaking changes identified.
+**Canon 60fps footage quantity unknown:** Research recommends converting Canon 60fps → 30fps for web delivery (50% file size reduction), but exact clip count and durations unclear from source files. **Handle during Phase 1:** Catalog phase will identify all 60fps clips via metadata extraction. Batch convert all Canon clips to 30fps during trim phase using `fps` filter.
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- **/cloudinary-community/next-cloudinary** (Context7) - CldVideoPlayer, CldImage components, configuration, best practices (380 code snippets)
-- **/vercel/next.js** (Context7) - Image optimization, video handling, server components, performance patterns
-- [Next.js Production Checklist](https://nextjs.org/docs/app/guides/production-checklist) - Bundle analysis, performance optimization
-- [Next.js Videos Guide](https://nextjs.org/docs/app/building-your-application/optimizing/videos) - Video optimization strategies, recommended approaches
-- [Vercel: Best Practices for Hosting Videos](https://vercel.com/guides/best-practices-for-hosting-videos-on-vercel-nextjs-mp4-gif) - Official video hosting recommendations
-- [Vercel Limits Documentation](https://vercel.com/docs/limits) - Bandwidth and function size limits (100GB, 250MB)
-- [Cloudinary Pricing](https://cloudinary.com/pricing) - Free tier specifications (25GB storage + bandwidth)
-- [Vercel KV Documentation](https://vercel.com/docs/storage/vercel-kv) - Setup and usage patterns
+- [FFmpeg Official Download](https://www.ffmpeg.org/download.html) — Version 8.0.1 stable release verified
+- [FFmpeg Formats Documentation](https://ffmpeg.org/ffmpeg-formats.html) — movflags, faststart flag specifications
+- [FFmpeg Codecs Documentation](https://ffmpeg.org/ffmpeg-codecs.html) — libx264, AAC encoder parameters
+- [DaVinci Resolve Downloads](https://www.blackmagicdesign.com/products/davinciresolve) — Version 20.3.2 confirmed
+- [auto-editor GitHub Releases](https://github.com/WyattBlue/auto-editor/releases) — Version 29.7.0 (Feb 6, 2026) verified
+- [Arch Linux FFmpeg Wiki](https://wiki.archlinux.org/title/FFmpeg) — Installation and usage on target system
+- [Mux: Compress Video with FFmpeg](https://www.mux.com/articles/how-to-compress-video-files-while-maintaining-quality-with-ffmpeg) — CRF, quality settings, faststart flag
+- [slhck CRF Guide](https://slhck.info/video/2017/02/24/crf-guide.html) — Definitive CRF explanation, ±6 = 2x file size
+- [Cloudinary: H.264 Best Practices](https://cloudinary.com/guides/video-formats/h-264-video-encoding-how-it-works-benefits-and-9-best-practices) — Web video optimization standards
 
 ### Secondary (MEDIUM confidence)
-- [Next.js Performance Optimization 2025 Playbook](https://medium.com/@buildweb.it/next-js-performance-optimization-a-2025-playbook-27db2772c1a7) - Server Components, bundle analysis techniques
-- [Lighthouse 100 with Next.js: Missing Performance Checklist](https://medium.com/better-dev-nextjs-react/lighthouse-100-with-next-js-the-missing-performance-checklist-e87ee487775f) - Bundle analyzer usage, font optimization
-- [Next.js Performance Tuning: Practical Fixes for Better Lighthouse Scores](https://www.qed42.com/insights/next-js-performance-tuning-practical-fixes-for-better-lighthouse-scores) - Image optimization, lazy loading strategies
-- [Optimizing Hero Background Videos](https://rigor.com/blog/optimizing-html5-hero-background-videos/) - Video compression and delivery best practices
-- [Fast and Responsive Hero Videos](https://simonhearne.com/2021/fast-responsive-videos/) - Performance optimization techniques for background video
-- [Cloudinary Responsive Image Gallery Guide](https://cloudinary.com/guides/responsive-images/responsive-image-gallery) - Gallery optimization patterns
-- [12 Key Features for Retreat Websites](https://basundari.com/retreat-websites/) - Retreat center specific feature expectations
-- [Hotel Website Design Best Practices](https://fireart.studio/blog/7-tips-for-perfect-hotel-website-design/) - Hospitality industry standards
+- [Transloadit: FFmpeg Web Optimization](https://transloadit.com/devtips/reducing-video-file-size-with-ffmpeg-for-web-optimization/) — File size reduction techniques, preset comparison
+- [Fastpix: Video Pipelines for Developers](https://www.fastpix.io/blog/a-complete-guide-to-video-pipelines) — Pipeline architecture patterns
+- [Frame.io: Video Post-Production Workflow](https://workflow.frame.io/guide/) — File organization best practices
+- [Compress Drone Videos Without Losing Stabilization Metadata](https://lifetips.alibaba.com/tech-efficiency/compress-drone-videos-without-losing-stabilization-metadata) — DJI metadata preservation
+- [DaVinci Resolve FFmpeg cheatsheet for Linux](https://alecaddd.com/davinci-resolve-ffmpeg-cheatsheet-for-linux/) — Resolve ↔ FFmpeg integration
+- [Exchanging video between DaVinci Resolve and FFMPEG](https://coertvonk.com/other/videoediting/exchanging-video-between-davinci-resolve-and-ffmpeg-32871) — Master export codecs
+- [FFmpeg to the Rescue: Convert 60fps to 30fps](https://streaminglearningcenter.com/blogs/ffmpeg-rescue-converting-60-fps-30-fps.html) — Frame rate conversion with fps filter
+- [Repairing Corrupt DJI Video Files](https://djifix.live555.com/) — DJI_0018.MP4 recovery options
 
-### Tertiary (LOW confidence - needs validation)
-- [Creating Web Optimized Video with FFmpeg](https://pixelpoint.io/blog/web-optimized-video-ffmpeg/) - H.264/H.265 compression settings (validate on actual drone footage)
-- [Compress Drone Video for Web](https://www.winxdvd.com/resize-video/compress-drone-video.htm) - Drone-specific compression recommendations (test CRF values)
-- [Video Autoplay Best Practices](https://cloudinary.com/guides/video-effects/video-autoplay-in-html) - Autoplay implementation (verify mobile behavior in testing)
+### Tertiary (LOW confidence - community sources)
+- [GitHub Gist: YouTube FFmpeg Settings](https://gist.github.com/mikoim/27e4e0dc64e384adbcb91ff10a2d3678) — CRF 23 recommendation validation
+- [DJI Mavic Pilots Forum: H.264 vs H.265](https://mavicpilots.com/threads/h-264-vs-h-265.50152/) — DJI Mavic Air codec discussion
+- [NewsShooter: Resolve 20.3.2 Update](https://www.newsshooter.com/2026/02/11/davinci-resolve-20-3-2-update/) — Latest release feature verification
 
 ---
-*Research completed: 2026-02-14*
+*Research completed: 2026-02-16*
 *Ready for roadmap: yes*
