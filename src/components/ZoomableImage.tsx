@@ -119,9 +119,9 @@ const ZoomableImage: React.FC<ZoomableImageProps> = ({ src, alt, onLoadingComple
           alt={alt}
           fill
           className="object-contain"
-          quality={100}
+          sizes="100vw"
+          quality={85}
           onLoadingComplete={onLoadingComplete}
-          priority
         />
       </div>
     </div>
