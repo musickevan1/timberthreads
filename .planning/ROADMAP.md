@@ -117,10 +117,11 @@ Plans:
   3. Canon interior clips are analyzed with silence/dead air timestamps exported to processing notes
   4. Reusable FFmpeg compression scripts exist for hero (720p, <5MB target) and promo (1080p, <10MB target) with correct browser compatibility flags (-movflags +faststart, -pix_fmt yuv420p)
   5. Trimmed segments are exported to processing/trimmed/ preserving DJI metadata for Resolve import
-**Plans**: TBD
+**Plans**: 2 plans in 2 waves
 
 Plans:
-- [ ] 06-01: TBD
+- [ ] 06-01-PLAN.md — Catalog all raw footage + analyze Canon audio for silence (Wave 1)
+- [ ] 06-02-PLAN.md — Compression scripts + prepare trimmed segments for Resolve (Wave 2, depends on 06-01)
 
 ### Phase 7: Creative Video Editing
 **Goal**: Manually assemble, color grade, and export master video files in DaVinci Resolve based on preprocessed clips from Phase 6
@@ -179,7 +180,7 @@ Phase 7 must complete before Phase 8 (web compression needs master exports).
 | 4. Performance Optimization | 0/TBD | Not started | - |
 | 5. Invoice | 0/TBD | Not started | - |
 | **v1.1 (Promo Video Edit)** | | | |
-| 6. Video Processing Infrastructure | 0/TBD | Not started | - |
+| 6. Video Processing Infrastructure | 0/2 | Planned | - |
 | 7. Creative Video Editing | 0/TBD | Not started | - |
 | 8. Web Compression & Deployment | 0/TBD | Not started | - |
 
