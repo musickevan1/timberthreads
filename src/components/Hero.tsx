@@ -12,13 +12,11 @@ const Hero = () => {
           alt="Timber & Threads Retreat Center"
           fill
           priority
-          quality={100}
-          loading="eager"
+          quality={80}
           sizes="100vw"
           className="object-cover"
-          style={{ 
+          style={{
             objectPosition: 'center 15%',
-            imageRendering: '-webkit-optimize-contrast',
             transform: 'scale(1.01)' // Slight scale to prevent edge artifacts
           }}
         />
