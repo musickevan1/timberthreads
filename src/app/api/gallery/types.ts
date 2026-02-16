@@ -1,5 +1,5 @@
 export interface ImageAsset {
-  src: string; // Will now store local path like '/assets/gallery/filename.jpg'
+  src: string; // Local path ('/assets/gallery/...') for existing images, Cloudinary public_id for new uploads
   alt: string;
   caption: string;
   section: 'Facility' | 'Quilting';
