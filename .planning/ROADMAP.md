@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 5: Invoice** - Generate PDF invoice for client ($400-600 range)
 
 **v1.1 (Promo Video Edit):**
-- [ ] **Phase 6: Video Processing Infrastructure** - CLI setup, cataloging, silence detection, trimming
+- [x] **Phase 6: Video Processing Infrastructure** - CLI setup, cataloging, silence detection, trimming ✓
 - [ ] **Phase 7: Creative Video Editing** - DaVinci Resolve editing with human action checkpoints
 - [ ] **Phase 8: Web Compression & Deployment** - FFmpeg final compression, poster frames, deploy to public/assets/videos/
 
@@ -120,8 +120,8 @@ Plans:
 **Plans**: 2 plans in 2 waves
 
 Plans:
-- [ ] 06-01-PLAN.md — Catalog all raw footage + analyze Canon audio for silence (Wave 1)
-- [ ] 06-02-PLAN.md — Compression scripts + prepare trimmed segments for Resolve (Wave 2, depends on 06-01)
+- [x] 06-01-PLAN.md — Catalog all raw footage + analyze Canon audio for silence (Wave 1) ✓
+- [x] 06-02-PLAN.md — Compression scripts + prepare trimmed segments for Resolve (Wave 2, depends on 06-01) ✓
 
 ### Phase 7: Creative Video Editing
 **Goal**: Manually assemble, color grade, and export master video files in DaVinci Resolve based on preprocessed clips from Phase 6
@@ -180,10 +180,10 @@ Phase 7 must complete before Phase 8 (web compression needs master exports).
 | 4. Performance Optimization | 0/TBD | Not started | - |
 | 5. Invoice | 0/TBD | Not started | - |
 | **v1.1 (Promo Video Edit)** | | | |
-| 6. Video Processing Infrastructure | 0/2 | Planned | - |
+| 6. Video Processing Infrastructure | 2/2 | ✓ Complete | 2026-02-16 |
 | 7. Creative Video Editing | 0/TBD | Not started | - |
 | 8. Web Compression & Deployment | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-14*
-*Last updated: 2026-02-16 (v1.1 phases added)*
+*Last updated: 2026-02-16 (Phase 6 complete)*
