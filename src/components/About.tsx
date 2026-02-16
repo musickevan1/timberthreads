@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 const About = () => {
   return (
     <section id="about" className="min-h-screen bg-stone-50 py-24">
@@ -22,32 +24,44 @@ const About = () => {
             </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="aspect-square rounded-lg overflow-hidden">
-              <img 
+            <div className="relative aspect-square rounded-lg overflow-hidden">
+              <Image
                 src="/assets/gallery/quilt-workspace.jpeg"
                 alt="Quilting workspace"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 50vw, 25vw"
+                quality={80}
               />
             </div>
-            <div className="aspect-square rounded-lg overflow-hidden mt-8">
-              <img 
+            <div className="relative aspect-square rounded-lg overflow-hidden mt-8">
+              <Image
                 src="/assets/gallery/quilt-display-1.jpeg"
                 alt="Quilt display"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 50vw, 25vw"
+                quality={80}
               />
             </div>
-            <div className="aspect-square rounded-lg overflow-hidden -mt-8">
-              <img 
+            <div className="relative aspect-square rounded-lg overflow-hidden -mt-8">
+              <Image
                 src="/assets/gallery/quilt-display-2.jpeg"
                 alt="Quilt display"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 50vw, 25vw"
+                quality={80}
               />
             </div>
-            <div className="aspect-square rounded-lg overflow-hidden">
-              <img 
+            <div className="relative aspect-square rounded-lg overflow-hidden">
+              <Image
                 src="/assets/gallery/quilt-display-3.jpeg"
                 alt="Quilt display"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 50vw, 25vw"
+                quality={80}
               />
             </div>
           </div>
