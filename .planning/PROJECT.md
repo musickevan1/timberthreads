@@ -4,6 +4,14 @@
 
 A website refresh and promo video production for Timber & Threads Retreat Center — a quilting/crafting retreat on a small island surrounded by a lake in rural Clinton, MO. The project covers shooting drone + camera footage on-site (Feb 15, 2026), editing a polished promo video, integrating it into the existing Next.js website, fixing the broken gallery system, optimizing performance, and delivering a client invoice.
 
+## Current Milestone: v1.1 Promo Video Edit
+
+**Goal:** Process raw Feb 15 shoot footage into two compressed, web-ready video deliverables for website integration.
+
+**Target deliverables:**
+- Hero background video (15-30s looping drone, muted, <5MB, 720p H.264)
+- Full promo video (1-2 min property tour with music, <10MB, 1080p H.264)
+
 ## Core Value
 
 The promo video and site improvements must make the retreat feel warm, inviting, and real — showcasing the unique island property in a way that makes quilters and crafters want to book a stay.
@@ -69,4 +77,4 @@ The promo video and site improvements must make the retreat feel warm, inviting,
 | $400-600 total project | Fair for rural MO market, maintains client relationship | — Pending |
 
 ---
-*Last updated: 2026-02-14 after initialization*
+*Last updated: 2026-02-16 after milestone v1.1 started*

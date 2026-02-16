@@ -2,17 +2,17 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-14)
+See: .planning/PROJECT.md (updated 2026-02-16)
 
 **Core value:** The promo video and site improvements must make the retreat feel warm, inviting, and real — showcasing the unique island property in a way that makes quilters and crafters want to book a stay.
-**Current focus:** Phase 1 - Infrastructure
+**Current focus:** Milestone v1.1 — Promo Video Edit
 
 ## Current Position
 
-Phase: 1 of 5 (Infrastructure)
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-02-14 — Roadmap and state initialization complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-16 — Milestone v1.1 started
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -53,18 +53,18 @@ None yet.
 
 ### Blockers/Concerns
 
-**Phase 3 blocker:** Video integration depends on Feb 15 shoot completion. Cannot select hero clip or integrate videos until footage is captured and edited.
+**Timeline constraint:** All work must complete by Feb 22 (1 week after shoot). Video editing is on the critical path for Phase 3 (Video Integration).
 
-**Timeline constraint:** All work must complete by Feb 22 (1 week after shoot). Tight timeline requires efficient execution across all phases.
+**Raw footage note:** DJI_0018.MP4 is corrupt — skip during processing.
 
-**Budget constraint:** $400-600 total project requires staying on Cloudinary/Vercel free tiers. Monitor bandwidth usage during Phase 4 to avoid overage charges.
+**Work split:** Creative editing (assembly, pacing, color grading, music) happens in DaVinci Resolve manually. CLI handles cataloging, trimming, compression, and poster extraction.
 
 ## Session Continuity
 
-Last session: 2026-02-14 (initialization)
-Stopped at: Roadmap and STATE.md created, ready to begin Phase 1 planning
+Last session: 2026-02-16 (milestone v1.1 initialization)
+Stopped at: Defining requirements for video edit milestone
 Resume file: None
 
 ---
 *Created: 2026-02-14*
-*Last updated: 2026-02-14*
+*Last updated: 2026-02-16*
