@@ -32,7 +32,6 @@ export default function GalleryAdmin() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>('Facility');
   const [galleryData, setGalleryData] = useState<GalleryState>({ images: [], deletedImages: [] });
-  const [selectedImage, setSelectedImage] = useState<ImageAsset | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [actionInProgress, setActionInProgress] = useState(false);
   const [dialogConfig, setDialogConfig] = useState<DialogConfig>({
@@ -183,7 +182,6 @@ export default function GalleryAdmin() {
   };
 
   const confirmSoftDelete = (image: ImageAsset) => {
-    setSelectedImage(image);
     setDialogConfig({
       isOpen: true,
       title: 'Remove Image',
@@ -195,7 +193,6 @@ export default function GalleryAdmin() {
   };
 
   const confirmRestore = (image: ImageAsset) => {
-    setSelectedImage(image);
     setDialogConfig({
       isOpen: true,
       title: 'Restore Image',
@@ -207,7 +204,6 @@ export default function GalleryAdmin() {
   };
 
   const confirmPermanentDelete = (image: ImageAsset) => {
-    setSelectedImage(image);
     setDialogConfig({
       isOpen: true,
       title: 'Permanently Delete Image',
