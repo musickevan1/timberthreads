@@ -1,51 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFile, writeFile as fsWriteFile, mkdir } from 'fs/promises';
+import { mkdir, writeFile as fsWriteFile } from 'fs/promises';
 import path from 'path';
 import sharp from 'sharp';
 import { ImageAsset, GalleryState } from './types';
+import { getGalleryData, saveGalleryData } from '@/lib/redis';
 // Temporarily comment out cloudinary import to fix build issues
 // import cloudinary, { uploadImage, deleteImage } from '../../../lib/cloudinary';
 
-const DB_PATH = path.join(process.cwd(), 'src', 'app', 'api', 'gallery', 'db.json');
-
-async function getDB(): Promise<GalleryState> {
-  try {
-    const data = await readFile(DB_PATH, 'utf-8');
-    return JSON.parse(data);
-  } catch (error) {
-    return { images: [], deletedImages: [] };
-  }
-}
-
-async function saveDB(data: GalleryState) {
-  try {
-    // Check if we're in production (Vercel)
-    const isProduction = process.env.VERCEL === '1';
-    console.log('Environment:', isProduction ? 'Production (Vercel)' : 'Development');
-    console.log('Saving to DB path:', DB_PATH);
-    
-    if (isProduction) {
-      console.log('WARNING: In production environment, file system is read-only');
-      console.log('Changes will not be persisted between deployments');
-      // In production, we'll just return true without actually writing to the file
-      // This allows the API to "succeed" even though changes won't persist
-      return true;
-    }
-    
-    // In development, write to the file as normal
-    await fsWriteFile(DB_PATH, JSON.stringify(data, null, 2));
-    console.log('Successfully saved to DB');
-    return true;
-  } catch (error) {
-    console.error('Error saving to DB:', error);
-    return false;
-  }
-}
+// Redis operations imported from @/lib/redis
+// getGalleryData() replaces getDB()
+// saveGalleryData() replaces saveDB()
 
 // GET /api/gallery
 export async function GET() {
   try {
-    const db = await getDB();
+    const db = await getGalleryData();
     return NextResponse.json(db);
   } catch (error) {
     return NextResponse.json(
@@ -102,13 +71,13 @@ export async function POST(request: NextRequest) {
     await fsWriteFile(path.join(publicDir, filename), optimizedImageBuffer);
 
     // Update database
-    const db = await getDB();
-    
+    const db = await getGalleryData();
+
     // Find the highest order number for this section
     const maxOrder = db.images
       .filter(img => img.section === section)
       .reduce((max, img) => Math.max(max, img.order || 0), 0);
-    
+
     const newImage: ImageAsset = {
       src: publicPath,
       alt: file.name.split('.')[0],
@@ -123,9 +92,9 @@ export async function POST(request: NextRequest) {
         }
       }
     };
-    
+
     db.images.push(newImage);
-    await saveDB(db);
+    await saveGalleryData(db);
 
     return NextResponse.json({
       message: 'File uploaded successfully',
@@ -167,7 +136,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const db = await getDB();
+    const db = await getGalleryData();
     console.log('Current DB state:', JSON.stringify(db, null, 2).substring(0, 200) + '...');
 
     if (action === 'softDelete') {
@@ -275,9 +244,9 @@ export async function PATCH(request: NextRequest) {
       // Update the image's section and order
       db.images[imageIndex].section = newSection;
       db.images[imageIndex].order = maxOrder + 1;
-      
-      await saveDB(db);
-      
+
+      await saveGalleryData(db);
+
       return NextResponse.json({
         message: 'Section updated successfully',
         data: db
@@ -326,37 +295,15 @@ export async function PATCH(request: NextRequest) {
           { status: 400 }
         );
       }
-      
-      // Check if we're in production (Vercel)
-      const isProduction = process.env.VERCEL === '1';
-      console.log('Environment:', isProduction ? 'Production (Vercel)' : 'Development');
-      
-      if (isProduction) {
-        console.log('WARNING: In production environment, changes will not persist');
-        // Update order in memory (will be lost on next deployment)
-        orderedImages.forEach((src: string, index: number) => {
-          const image = db.images.find(img => img.src === src && img.section === section);
-          if (image) {
-            image.order = index + 1;
-            console.log(`Updated order for ${src} to ${index + 1} (temporary)`);
-          }
-        });
-        
-        // Return success even though changes won't persist
-        return NextResponse.json({
-          message: 'Order updated (Note: Changes are temporary in production)',
-          data: db
-        });
-      } else {
-        // In development, update order and save to file
-        orderedImages.forEach((src: string, index: number) => {
-          const image = db.images.find(img => img.src === src && img.section === section);
-          if (image) {
-            image.order = index + 1;
-            console.log(`Updated order for ${src} to ${index + 1}`);
-          }
-        });
-      }
+
+      // Update order in Redis (persists in all environments)
+      orderedImages.forEach((src: string, index: number) => {
+        const image = db.images.find(img => img.src === src && img.section === section);
+        if (image) {
+          image.order = index + 1;
+          console.log(`Updated order for ${src} to ${index + 1}`);
+        }
+      });
     } else {
       return NextResponse.json(
         { error: `Unknown action: ${action}` },
@@ -364,13 +311,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const saveResult = await saveDB(db);
-    if (!saveResult) {
-      return NextResponse.json(
-        { error: 'Failed to save changes to database' },
-        { status: 500 }
-      );
-    }
+    await saveGalleryData(db);
 
     return NextResponse.json({
       message: 'Operation successful',
@@ -398,18 +339,18 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const db = await getDB();
-    
+    const db = await getGalleryData();
+
     // Find the image to delete
     const imageToDelete = db.deletedImages.find(img => img.src === src);
-    
+
     // Temporarily comment out Cloudinary deletion
     console.log('Would delete from storage:', src);
     // In a real implementation, we would delete the file from storage
 
     // Remove from deleted images
     db.deletedImages = db.deletedImages.filter(img => img.src !== src);
-    await saveDB(db);
+    await saveGalleryData(db);
 
     return NextResponse.json({
       message: 'File permanently deleted',
