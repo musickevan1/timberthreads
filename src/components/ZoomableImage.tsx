@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import { CldImage } from 'next-cloudinary';
 
 interface ZoomableImageProps {
   src: string;
@@ -15,6 +16,7 @@ const ZoomableImage: React.FC<ZoomableImageProps> = ({ src, alt, onLoadingComple
   const containerRef = useRef<HTMLDivElement>(null);
   const lastTouchRef = useRef({ x: 0, y: 0 });
   const initialTouchesDistanceRef = useRef<number | null>(null);
+  const isLocal = src.startsWith('/');
 
   // Reset transform when image changes
   useEffect(() => {
@@ -114,15 +116,25 @@ const ZoomableImage: React.FC<ZoomableImageProps> = ({ src, alt, onLoadingComple
         }}
         className="w-full h-full"
       >
-        <Image
-          src={src}
-          alt={alt}
-          fill
-          className="object-contain"
-          sizes="100vw"
-          quality={85}
-          onLoadingComplete={onLoadingComplete}
-        />
+        {isLocal ? (
+          <Image
+            src={src}
+            alt={alt}
+            fill
+            className="object-contain"
+            sizes="100vw"
+            onLoad={onLoadingComplete}
+          />
+        ) : (
+          <CldImage
+            src={src}
+            alt={alt}
+            fill
+            className="object-contain"
+            sizes="100vw"
+            onLoad={onLoadingComplete}
+          />
+        )}
       </div>
     </div>
   );

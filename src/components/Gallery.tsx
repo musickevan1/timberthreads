@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { CldImage } from 'next-cloudinary';
 import { ImageAsset } from '@/app/api/gallery/types';
 import LightboxGallery from './LightboxGallery';
 
@@ -95,31 +96,49 @@ export default function Gallery() {
           <div className="mb-12">
             <h3 className="text-2xl font-semibold mb-6">Our Facility</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {facilityImages.map((image) => (
-                <div 
-                  key={image.src} 
-                  className="relative group cursor-pointer"
-                  onClick={() => {
-                    setSelectedImageIndex(facilityImages.indexOf(image));
-                    setCurrentSection('Facility');
-                  }}
-                >
-                  <div className="aspect-video relative overflow-hidden rounded-lg shadow-md">
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 z-10"></div>
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      quality={80}
-                    />
+              {facilityImages.map((image, index) => {
+                const globalIndex = index;
+                const isLocal = image.src.startsWith('/');
+
+                return (
+                  <div
+                    key={image.src}
+                    className="relative group cursor-pointer"
+                    onClick={() => {
+                      setSelectedImageIndex(facilityImages.indexOf(image));
+                      setCurrentSection('Facility');
+                    }}
+                  >
+                    <div className="aspect-video relative overflow-hidden rounded-lg shadow-md">
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 z-10"></div>
+                      {isLocal ? (
+                        <Image
+                          src={image.src}
+                          alt={image.alt}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          priority={globalIndex < 6}
+                        />
+                      ) : (
+                        <CldImage
+                          src={image.src}
+                          alt={image.alt}
+                          fill
+                          crop="fill"
+                          gravity="auto"
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          priority={globalIndex < 6}
+                        />
+                      )}
+                    </div>
+                    <div className="mt-2 text-center">
+                      <p className="text-sm text-gray-600">{image.caption}</p>
+                    </div>
                   </div>
-                  <div className="mt-2 text-center">
-                    <p className="text-sm text-gray-600">{image.caption}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -129,31 +148,49 @@ export default function Gallery() {
           <div className="mb-12">
             <h3 className="text-2xl font-semibold mb-6">Quilting Gallery</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {quiltingImages.map((image) => (
-                <div 
-                  key={image.src} 
-                  className="relative group cursor-pointer"
-                  onClick={() => {
-                    setSelectedImageIndex(quiltingImages.indexOf(image));
-                    setCurrentSection('Quilting');
-                  }}
-                >
-                  <div className="aspect-video relative overflow-hidden rounded-lg shadow-md">
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 z-10"></div>
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      quality={80}
-                    />
+              {quiltingImages.map((image, index) => {
+                const globalIndex = facilityImages.length + index;
+                const isLocal = image.src.startsWith('/');
+
+                return (
+                  <div
+                    key={image.src}
+                    className="relative group cursor-pointer"
+                    onClick={() => {
+                      setSelectedImageIndex(quiltingImages.indexOf(image));
+                      setCurrentSection('Quilting');
+                    }}
+                  >
+                    <div className="aspect-video relative overflow-hidden rounded-lg shadow-md">
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 z-10"></div>
+                      {isLocal ? (
+                        <Image
+                          src={image.src}
+                          alt={image.alt}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          priority={globalIndex < 6}
+                        />
+                      ) : (
+                        <CldImage
+                          src={image.src}
+                          alt={image.alt}
+                          fill
+                          crop="fill"
+                          gravity="auto"
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          priority={globalIndex < 6}
+                        />
+                      )}
+                    </div>
+                    <div className="mt-2 text-center">
+                      <p className="text-sm text-gray-600">{image.caption}</p>
+                    </div>
                   </div>
-                  <div className="mt-2 text-center">
-                    <p className="text-sm text-gray-600">{image.caption}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
