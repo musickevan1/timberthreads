@@ -55,11 +55,11 @@ Plans:
   4. Gallery displays images with automatic format optimization (WebP/AVIF based on browser)
   5. Gallery implements lazy loading (first 6 images eager, rest lazy)
   6. No broken image links or 404 errors after migration
-**Plans**: TBD
+**Plans**: 2 plans in 2 waves
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md — Migrate local gallery images to Cloudinary and update Redis metadata (Wave 1)
+- [ ] 02-02-PLAN.md — Update frontend components to CldImage/CldUploadWidget with lazy loading (Wave 2)
 
 ### Phase 3: Video Integration
 **Goal**: Add professionally shot promo video to homepage (hero background + dedicated section)
@@ -178,7 +178,7 @@ Phase 7 must complete before Phase 8 (web compression needs master exports).
 |-------|----------------|--------|-----------|
 | **v1.0 (Website Update)** | | | |
 | 1. Infrastructure | 4/4 | ✓ Complete | 2026-02-16 |
-| 2. Gallery Migration | 0/TBD | Not started | - |
+| 2. Gallery Migration | 0/2 | Planned | - |
 | 3. Video Integration | 0/3 | Planned | - |
 | 4. Performance Optimization | 0/TBD | Not started | - |
 | 5. Invoice | 0/TBD | Not started | - |
@@ -189,4 +189,4 @@ Phase 7 must complete before Phase 8 (web compression needs master exports).
 
 ---
 *Roadmap created: 2026-02-14*
-*Last updated: 2026-02-16 (Phase 1 complete)*
+*Last updated: 2026-02-16 (Phase 2 planned)*
