@@ -36,11 +36,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Next.js Image component enabled and configured for Cloudinary (images.unoptimized: false)
   4. Vercel KV database operational and accessible from API routes
   5. Admin can upload test image to Cloudinary and retrieve metadata from Vercel KV
-**Plans**: TBD
+**Plans**: 4 plans (3 original + 1 gap closure)
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [x] 01-01-PLAN.md — Enable Next.js Image optimization and fix image loading strategy (Wave 1)
+- [x] 01-02-PLAN.md — Redis persistence for gallery metadata (Wave 1)
+- [x] 01-03-PLAN.md — Cloudinary CDN Integration (Wave 2)
+- [ ] 01-04-PLAN.md — Implement Cloudinary image deletion in DELETE handler (gap closure)
 
 ### Phase 2: Gallery Migration
 **Goal**: Migrate existing gallery to Cloudinary with full admin functionality working in production
@@ -175,7 +177,7 @@ Phase 7 must complete before Phase 8 (web compression needs master exports).
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | **v1.0 (Website Update)** | | | |
-| 1. Infrastructure | 0/TBD | Not started | - |
+| 1. Infrastructure | 3/4 | Gap closure planned | - |
 | 2. Gallery Migration | 0/TBD | Not started | - |
 | 3. Video Integration | 0/3 | Planned | - |
 | 4. Performance Optimization | 0/TBD | Not started | - |
@@ -187,4 +189,4 @@ Phase 7 must complete before Phase 8 (web compression needs master exports).
 
 ---
 *Roadmap created: 2026-02-14*
-*Last updated: 2026-02-16 (Phase 6 complete)*
+*Last updated: 2026-02-16 (Phase 1 gap closure planned)*
