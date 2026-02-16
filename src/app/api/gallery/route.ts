@@ -345,9 +345,22 @@ export async function DELETE(request: NextRequest) {
     // Find the image to delete
     const imageToDelete = db.deletedImages.find(img => img.src === src);
 
-    // Temporarily comment out Cloudinary deletion
-    console.log('Would delete from storage:', src);
-    // In a real implementation, we would delete the file from storage
+    // Delete from Cloudinary if it's a Cloudinary-hosted image
+    if (imageToDelete) {
+      const isCloudinaryImage = !imageToDelete.src.startsWith('/');
+
+      if (isCloudinaryImage) {
+        try {
+          await cloudinary.uploader.destroy(imageToDelete.src);
+          console.log('Deleted from Cloudinary:', imageToDelete.src);
+        } catch (cloudinaryError) {
+          // Log error but continue with Redis cleanup
+          // This ensures metadata is always cleaned up even if Cloudinary API fails
+          console.error('Failed to delete from Cloudinary:', cloudinaryError);
+        }
+      }
+      // Local paths (starting with /) are skipped - they're on read-only Vercel filesystem
+    }
 
     // Remove from deleted images
     db.deletedImages = db.deletedImages.filter(img => img.src !== src);
