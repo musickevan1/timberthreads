@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mkdir, writeFile as fsWriteFile } from 'fs/promises';
-import path from 'path';
 import sharp from 'sharp';
 import { ImageAsset, GalleryState } from './types';
 import { getGalleryData, saveGalleryData } from '@/lib/redis';
-// Temporarily comment out cloudinary import to fix build issues
-// import cloudinary, { uploadImage, deleteImage } from '../../../lib/cloudinary';
+import { cloudinary } from '@/lib/cloudinary';
 
 // Redis operations imported from @/lib/redis
 // getGalleryData() replaces getDB()
@@ -52,23 +49,27 @@ export async function POST(request: NextRequest) {
 
     // Optimize and resize image
     const optimizedImageBuffer = await sharp(buffer)
-      .resize({ 
+      .resize({
         width: 1920,  // Max width for web
         height: 1080, // Max height for web
-        fit: 'inside', 
-        withoutEnlargement: true 
+        fit: 'inside',
+        withoutEnlargement: true
       })
       .webp({ quality: 80 }) // Convert to WebP with 80% quality
       .toBuffer();
 
-    // Generate filename
-    const filename = `${file.name.split('.')[0]}-${Date.now()}.webp`.toLowerCase().replace(/\s+/g, '-');
-    const publicPath = `/assets/gallery/${filename}`;
+    // Upload to Cloudinary
+    const base64Image = `data:image/webp;base64,${optimizedImageBuffer.toString('base64')}`;
 
-    // Save optimized image to public directory
-    const publicDir = path.join(process.cwd(), 'public', 'assets', 'gallery');
-    await mkdir(publicDir, { recursive: true });
-    await fsWriteFile(path.join(publicDir, filename), optimizedImageBuffer);
+    const uploadResult = await cloudinary.uploader.upload(base64Image, {
+      folder: 'timber-threads/gallery',
+      public_id: `${Date.now()}-${file.name.split('.')[0].toLowerCase().replace(/\s+/g, '-')}`,
+      transformation: [
+        { width: 1920, height: 1080, crop: 'limit' },
+        { quality: 'auto:good', fetch_format: 'auto' }
+      ],
+      tags: [section.toLowerCase(), 'gallery']
+    });
 
     // Update database
     const db = await getGalleryData();
@@ -79,7 +80,7 @@ export async function POST(request: NextRequest) {
       .reduce((max, img) => Math.max(max, img.order || 0), 0);
 
     const newImage: ImageAsset = {
-      src: publicPath,
+      src: uploadResult.public_id,
       alt: file.name.split('.')[0],
       caption,
       section,
@@ -87,8 +88,8 @@ export async function POST(request: NextRequest) {
       metadata: {
         uploadedAt: new Date().toISOString(),
         dimensions: {
-          width: (await sharp(optimizedImageBuffer).metadata()).width || 0,
-          height: (await sharp(optimizedImageBuffer).metadata()).height || 0
+          width: uploadResult.width,
+          height: uploadResult.height
         }
       }
     };
