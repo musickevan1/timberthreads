@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import Image from 'next/image';
 
 const Accommodations = () => {
   return (
@@ -16,12 +16,15 @@ const Accommodations = () => {
 
         <div className="grid md:grid-cols-2 gap-12">
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div className="h-64 overflow-hidden">
-              <img 
+            <div className="relative h-64 overflow-hidden">
+              <Image
                 src="/assets/gallery/hero-front-view.jpeg"
                 alt="Retreat front view"
-                className="w-full h-full object-cover object-center"
+                fill
+                className="object-cover"
                 style={{ objectPosition: '0 30%' }}
+                sizes="(max-width: 768px) 100vw, 50vw"
+                quality={80}
               />
             </div>
             <div className="p-6">
@@ -40,11 +43,14 @@ const Accommodations = () => {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div className="h-64 overflow-hidden">
-              <img 
+            <div className="relative h-64 overflow-hidden">
+              <Image
                 src="/assets/gallery/quilt-workspace.jpeg"
                 alt="Quilting workspace"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                quality={80}
               />
             </div>
             <div className="p-6">
