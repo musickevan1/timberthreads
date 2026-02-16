@@ -13,7 +13,7 @@ This roadmap transforms the Timber & Threads Retreat website from a broken galle
 Decimal phases appear between their surrounding integers in numeric order.
 
 **v1.0 (Website Update):**
-- [ ] **Phase 1: Infrastructure** - Fix broken gallery persistence, set up Cloudinary + Vercel KV
+- [x] **Phase 1: Infrastructure** - Fix broken gallery persistence, set up Cloudinary + Vercel KV ✓
 - [ ] **Phase 2: Gallery Migration** - Migrate images to Cloudinary, update admin UI
 - [ ] **Phase 3: Video Integration** - Add hero background video + dedicated promo section (depends on Feb 15 shoot)
 - [ ] **Phase 4: Performance Optimization** - Lazy loading, Lighthouse scores, bundle optimization
@@ -42,7 +42,7 @@ Plans:
 - [x] 01-01-PLAN.md — Enable Next.js Image optimization and fix image loading strategy (Wave 1)
 - [x] 01-02-PLAN.md — Redis persistence for gallery metadata (Wave 1)
 - [x] 01-03-PLAN.md — Cloudinary CDN Integration (Wave 2)
-- [ ] 01-04-PLAN.md — Implement Cloudinary image deletion in DELETE handler (gap closure)
+- [x] 01-04-PLAN.md — Implement Cloudinary image deletion in DELETE handler (gap closure) ✓
 
 ### Phase 2: Gallery Migration
 **Goal**: Migrate existing gallery to Cloudinary with full admin functionality working in production
@@ -177,7 +177,7 @@ Phase 7 must complete before Phase 8 (web compression needs master exports).
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | **v1.0 (Website Update)** | | | |
-| 1. Infrastructure | 3/4 | Gap closure planned | - |
+| 1. Infrastructure | 4/4 | ✓ Complete | 2026-02-16 |
 | 2. Gallery Migration | 0/TBD | Not started | - |
 | 3. Video Integration | 0/3 | Planned | - |
 | 4. Performance Optimization | 0/TBD | Not started | - |
@@ -189,4 +189,4 @@ Phase 7 must complete before Phase 8 (web compression needs master exports).
 
 ---
 *Roadmap created: 2026-02-14*
-*Last updated: 2026-02-16 (Phase 1 gap closure planned)*
+*Last updated: 2026-02-16 (Phase 1 complete)*
