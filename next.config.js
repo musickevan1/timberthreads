@@ -4,7 +4,19 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: 'res.cloudinary.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.facebook.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.fbsbx.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.google.com',
       },
     ],
   },
@@ -16,7 +28,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; connect-src 'self' https://*.facebook.com https://www.google.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.facebook.net https://*.facebook.com https://www.google.com; frame-src https://*.facebook.com https://calendar.google.com https://www.google.com/maps/embed; style-src 'self' 'unsafe-inline' https://*.facebook.com; font-src 'self' data: https://*.facebook.com; img-src 'self' https://*.facebook.com https://*.fbsbx.com https://www.google.com data:;"
+            value: "default-src 'self'; connect-src 'self' https://*.facebook.com https://www.google.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.facebook.net https://*.facebook.com https://www.google.com; frame-src https://*.facebook.com https://calendar.google.com https://www.google.com/maps/embed; style-src 'self' 'unsafe-inline' https://*.facebook.com; font-src 'self' data: https://*.facebook.com; img-src 'self' https://res.cloudinary.com https://*.facebook.com https://*.fbsbx.com https://www.google.com data:;"
           }
         ]
       }
