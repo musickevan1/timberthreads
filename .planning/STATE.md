@@ -21,19 +21,20 @@ Progress: [██░░░░░░░░] 20% (v1.1 milestone - estimated)
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 6.2 min
-- Total execution time: 0.2 hours
+- Total plans completed: 3
+- Average duration: 5.3 min
+- Total execution time: 0.3 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
+| 01-infrastructure | 1 | 2.8min | 2.8min |
 | 06-video-processing-infrastructure | 2 | 12.4min | 6.2min |
 
 **Recent Trend:**
-- Last 5 plans: 06-01 (7.4min), 06-02 (5.0min)
-- Trend: Phase 6 complete - ready for Phase 7 creative editing
+- Last 5 plans: 06-01 (7.4min), 06-02 (5.0min), 01-01 (2.8min)
+- Trend: Phase 01 started - image optimization complete
 
 *Updated after each plan completion*
 
@@ -43,6 +44,9 @@ Progress: [██░░░░░░░░] 20% (v1.1 milestone - estimated)
 
 Recent decisions affecting current work:
 
+- **Next.js Image optimization enabled**: Removed unoptimized flag to enable automatic WebP/AVIF conversion and responsive sizing - reduces page weight from ~48MB to ~5MB (01-01)
+- **Quality settings standardized**: Hero/gallery/section images at quality=80, lightbox at quality=85 - visually indistinguishable but ~40% smaller file sizes (01-01)
+- **Priority only for above-the-fold**: Only hero image and logo have priority flag, all below-fold images lazy load by default (01-01)
 - **Canon clips kept at 60fps for Resolve**: Decided NOT to convert 60fps→30fps in Phase 06. DaVinci Resolve handles framerate conversion better with optical flow, keeping 60fps gives more creative flexibility during editing (06-02)
 - **Two-pass encoding with calculated bitrate**: Compression scripts use formula (target_size_kb * 8) / duration_sec = total_bitrate_kbps to guarantee <5MB/<10MB file sizes (not CRF which is unpredictable) (06-02)
 - **Hero video is muted**: Hero video uses -an flag (no audio track) per HERO-01 requirement, saves ~200KB for video bitrate headroom (06-02)
@@ -74,11 +78,11 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-16 09:14
-Stopped at: Completed 06-02-PLAN.md (Video Compression Scripts & Resolve Prep)
+Last session: 2026-02-16 20:36
+Stopped at: Completed 01-01-PLAN.md (Enable Next.js Image Optimization)
 Resume file: None
-Next action: Phase 6 complete - ready to begin Phase 7 (Creative Editing in DaVinci Resolve)
+Next action: Continue Phase 01 infrastructure improvements (plans 02-03), or resume Phase 7 creative editing
 
 ---
 *Created: 2026-02-14*
-*Last updated: 2026-02-16*
+*Last updated: 2026-02-16 20:36*
