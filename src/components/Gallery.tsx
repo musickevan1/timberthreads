@@ -112,8 +112,7 @@ export default function Gallery() {
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      quality={85}
-                      priority
+                      quality={80}
                     />
                   </div>
                   <div className="mt-2 text-center">
@@ -147,8 +146,7 @@ export default function Gallery() {
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      quality={85}
-                      priority
+                      quality={80}
                     />
                   </div>
                   <div className="mt-2 text-center">
