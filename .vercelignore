@@ -11,8 +11,8 @@ timberandthreads-promo-clips/
 pre-production/
 invoices/
 scripts/
-components/
-assets/
+/components/
+/assets/
 .planning/
 .playwright-mcp/
 
