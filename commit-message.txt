@@ -1,6 +1,0 @@
-fix: resolve sharp module import for gallery uploads
-
-- Reinstall sharp and @types/sharp packages
-- Restore sharp import in gallery route
-- Ensure image optimization functionality works
-- Maintain existing image upload and processing logic

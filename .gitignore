@@ -1,21 +1,14 @@
-# dependencies
+# === Dependencies ===
 /node_modules
 /.pnp
 .pnp.js
 
-# testing
-/coverage
-
-# next.js
+# === Next.js ===
 /.next/
 /out/
-
-# production
 /build
 
-# misc
-.DS_Store
-*.pem
+# === Environment ===
 .env
 .env.local
 .env.development.local
@@ -23,18 +16,62 @@
 .env.production.local
 !.env.example
 
-# debug
+# === Testing ===
+/coverage
+
+# === Debug ===
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# IDE
+# === IDE ===
 .idea/
 .vscode/
-
-# vercel
-.vercel
-
-# typescript
 *.tsbuildinfo
 next-env.d.ts
+.DS_Store
+*.pem
+
+# === Vercel ===
+.vercel
+
+# === Playwright ===
+/.playwright-mcp/
+
+# ==========================================
+# Non-website project files
+# ==========================================
+
+# Raw footage
+/drone-clips/
+/drone-clips.zip
+/timberandthreads-promo-clips/
+
+# Video processing (entire directory)
+/processing/
+
+# Legacy code (superseded by src/)
+/components/
+/assets/
+
+# Pre-production & admin
+/pre-production/
+/invoices/
+
+# Migration/utility scripts
+/scripts/
+
+# Misc
+migration-log.json
+commit-message.txt
+
+# Media safety net (catch any stray media files at root)
+*.mp4
+*.MP4
+*.mov
+*.MOV
+*.avi
+*.mkv
+*.webm
+*.CR3
+*.zip
