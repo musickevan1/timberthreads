@@ -1,64 +1,35 @@
-# Timber & Threads Retreat Website
+# Timber & Threads Retreat
 
-A Next.js website for Timber & Threads Retreat featuring availability calendar and gallery management.
+A full-stack marketing and booking site for a quilting retreat center in rural Missouri.
 
-## Features
+**Live:** [timberandthreadsretreat.com](https://www.timberandthreadsretreat.com/)
 
-- Responsive design
-- Google Calendar integration for availability
-- Admin panel for gallery management
-- Image upload and management
-- Secure admin access
+---
 
-## Setup Instructions
+## Overview
 
-1. Install dependencies:
-```bash
-npm install
-```
+Timber & Threads Retreat is a hospitality business offering quilting retreats, crafting weekends, and family gatherings at a lakeside property in West Central Missouri. The client needed a web presence that could show real-time availability, showcase the property through photography, and let potential guests reach out directly -- all manageable by the owner without developer involvement. This project delivered a single-page marketing site with integrated booking visibility, a self-service gallery, and a contact form that routes inquiries straight to the client's inbox.
 
-2. Create `.env` file:
-Copy `.env.example` to `.env` and set your admin password:
-```
-NEXT_PUBLIC_ADMIN_PASSWORD=your_secure_password
-```
+## Key Features
 
-3. Google Calendar Setup:
-- Create a Google Calendar for the retreat
-- Set sharing settings to "Make available to public"
-- Get the embed code
-- Replace the calendar URL in `src/components/Calendar.tsx`
+- **Real-time availability calendar** -- embedded Google Calendar gives guests an always-current view of open dates without any manual syncing
+- **Cloud-hosted image gallery** -- images served through Cloudinary with automatic format optimization and responsive sizing; organized into categorized sections with sortable ordering
+- **Lightbox viewer with touch support** -- full-screen image browsing with pinch-to-zoom, swipe navigation, and keyboard controls
+- **Contact form with email delivery** -- server-side form handling via Nodemailer routes inquiries directly to the business owner
+- **Interactive location section** -- embedded Google Maps alongside step-by-step driving directions for a rural property where GPS can be unreliable
+- **Content management system** -- the owner can upload, reorder, recategorize, caption, and soft-delete gallery images without touching code
+- **Responsive single-page layout** -- smooth-scrolling sections for About, Accommodations, Workshops, Calendar, Gallery, Contact, and Location, all optimized for mobile booking
 
-4. Run the development server:
-```bash
-npm run dev
-```
+## Technical Highlights
 
-## Admin Access
+**Image pipeline.** Uploads are processed server-side with Sharp (resized to web dimensions, converted to WebP at 80% quality) before being pushed to Cloudinary. The gallery API uses signed upload requests so credentials never reach the client. Cloudinary's `CldImage` component handles automatic format negotiation and responsive `srcset` generation on the front end.
 
-- Access the admin panel at `/admin`
-- Use the password set in `.env`
-- Manage gallery images at `/admin/gallery`
+**Serverless data layer.** Gallery metadata (ordering, captions, sections, soft-delete state) is persisted in Upstash Redis via REST API, keeping the architecture fully serverless with no traditional database to manage. This pairs well with Vercel's edge deployment model.
 
-## Deployment
+**Image interaction.** The lightbox implements a custom `ZoomableImage` component with pinch-to-zoom (tracking touch distance deltas), bounded drag-to-pan when zoomed, and double-click/double-tap toggle -- all built from scratch without a library dependency.
 
-1. Set environment variables in Vercel:
-   - `NEXT_PUBLIC_ADMIN_PASSWORD`
+**Soft-delete workflow.** Gallery deletions are non-destructive by default. Images move to a recoverable state before permanent removal, which also cleans up the corresponding Cloudinary asset. This gives the client a safety net when managing content.
 
-2. Deploy to Vercel:
-```bash
-vercel
-```
+## Built With
 
-## File Structure
-
-- `/src/app/admin/*` - Admin panel pages
-- `/src/app/api/*` - API routes
-- `/src/components/*` - React components
-- `/public/assets/*` - Uploaded images
-
-## Development
-
-- Built with Next.js 14
-- Uses Tailwind CSS for styling
-- TypeScript for type safety
+Next.js 14, React 18, TypeScript, Tailwind CSS, Cloudinary, Upstash Redis, Sharp, Nodemailer, Vercel
